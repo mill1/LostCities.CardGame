@@ -18,10 +18,16 @@ namespace LostCities.CardGame.Console.Services
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public string GetWikipediaRawArticleText(string articleTitle, bool netto)
+        public object Test()
         {
+            HttpResponseMessage response = client.GetAsync("game/new").Result;
 
-            string uri = $"wikipediareader/rawarticle/{articleTitle}/netto/{netto}";
+            return HandleResponse(response);
+        }
+
+        public string GetWikipediaRawArticleText(string articleTitle)
+        {
+            string uri = $"wikipediareader/rawarticle/{articleTitle}";
             HttpResponseMessage response = client.GetAsync(uri).Result;
 
             return HandleResponse(response);

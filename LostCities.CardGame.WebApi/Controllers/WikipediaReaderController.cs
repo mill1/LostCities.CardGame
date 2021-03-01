@@ -19,12 +19,12 @@ namespace LostCities.CardGame.WebApi.Controllers
             this.logger = logger;
         }
 
-        [HttpGet("rawarticle/{articleTitle}/netto/{nettoContent}")]
-        public IActionResult GetArticle(string articleTitle, bool nettoContent)
+        [HttpGet("rawarticle/{articleTitle}")]
+        public IActionResult GetArticle(string articleTitle)
         {
             try
             {
-                return Ok(wikipediaService.GetRawArticleText(ref articleTitle, nettoContent));
+                return Ok(wikipediaService.GetRawArticleText(ref articleTitle));
             }
             catch (Exception e)
             {
