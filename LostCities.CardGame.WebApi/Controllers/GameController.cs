@@ -26,26 +26,50 @@ namespace LostCities.CardGame.WebApi.Controllers
         {
             try
             {
-                var deckDto = MapToDto(gameService.InitializeDeck());
+                var newGame = gameService.GetNewGame();
 
-                return Ok(deckDto);
+                return Ok(MapToDto(newGame));
             }
             catch (Exception e)
             {
-                string message = $"Getting the properties failed.\r\nException:\r\n{e}";
+                string message = $"Getting the new game failed.\r\nException:\r\n{e}";
                 logger.LogError($"{message}", e);
                 return BadRequest(message);
             }
         }
 
-        private IEnumerable<Dtos.Card> MapToDto(IEnumerable<Models.Card> deck)
+        private Dtos.Game MapToDto(Models.GameCards game)
         {
-            List<Dtos.Card> deckDto = new List<Dtos.Card>();
+            Dtos.Game gameCardsDto = new Dtos.Game
+            {
+                PlayerCards = MapToDto(game.PlayerCards.Cards),
+                BotCards = MapToDto(game.BotCards.Cards),
+                DrawPile = MapToDto(game.DrawPile.Cards),
+                PlayerExpeditions = MapToDto(game.PlayerExpeditions),
+                BotExpeditions = MapToDto(game.BotExpeditions),               
+                DiscardPiles = MapToDto(game.DiscardPiles)
+            };
+            return gameCardsDto;
+        }
 
-            foreach (var card in deck)
-                deckDto.Add(MapToDto(card));
+        private IEnumerable<IEnumerable<Dtos.Card>> MapToDto(IEnumerable<Models.CardCollection> cardCollections)
+        {
+            List<IEnumerable<Dtos.Card>> cardsListDto = new List<IEnumerable<Dtos.Card>>();
 
-            return deckDto;
+            foreach (Models.CardCollection cardCollection in cardCollections)
+                cardsListDto.Add(MapToDto(cardCollection.Cards));
+
+            return cardsListDto;
+        }
+
+        private IEnumerable<Dtos.Card> MapToDto(IEnumerable<Models.Card> cards)
+        {
+            List<Dtos.Card> cardsDto = new List<Dtos.Card>();
+
+            foreach (var card in cards)
+                cardsDto.Add(MapToDto(card));
+
+            return cardsDto;
         }            
 
         private Dtos.Card MapToDto(Models.Card card)
@@ -53,7 +77,7 @@ namespace LostCities.CardGame.WebApi.Controllers
             return new Dtos.Card()
             {
                 Id = card.Id,
-                Color = card.Color,
+                Color = card.Color.ToString(),
                 Value = card.Value
             };
         }

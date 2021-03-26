@@ -16,6 +16,6 @@ namespace LostCities.CardGame.WebApi.Models
 
         public string Id { get; }
         public ConsoleColor Color { get; }
-        public int Value { get; } // Betting card: Value == 0, otherwise expedition card
+        public int Value { get; } // Wager card: Value == 0, otherwise expedition card
     }
 }

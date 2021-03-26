@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+//using System.Text.Json;
 
 namespace LostCities.CardGame.Console.Services
 {
@@ -18,11 +20,15 @@ namespace LostCities.CardGame.Console.Services
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public object Test()
+        public WebApi.Dtos.Game GetNewGame()
         {
             HttpResponseMessage response = client.GetAsync("game/new").Result;
 
-            return HandleResponse(response);
+            string result = HandleResponse(response);
+
+            WebApi.Dtos.Game game = JsonConvert.DeserializeObject<WebApi.Dtos.Game>(result);
+
+            return game;
         }
 
         public string GetWikipediaRawArticleText(string articleTitle)
