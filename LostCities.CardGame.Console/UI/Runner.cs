@@ -7,7 +7,7 @@ namespace LostCities.CardGame.Console.UI
 {
     public class Runner
     {
-        private const string NewGame = "n";
+        private const string NewDuel = "n";
         private const string Wiki = "w";
         private const string Quit = "q";
         private bool quit;
@@ -49,7 +49,7 @@ namespace LostCities.CardGame.Console.UI
         {
             return new List<string>
             {
-                $"{NewGame}:\tNew game",
+                $"{NewDuel}:\tNew duel",
                 $"{Wiki}:\tShow wiki",
                 $"{Quit}:\tQuit application"
             };
@@ -59,8 +59,9 @@ namespace LostCities.CardGame.Console.UI
         {
             switch (answer)
             {
-                case NewGame:
-                    var tmp = http.Test();
+                case NewDuel:
+                    var game  = http.GetNewGame();                    
+                    new Duel().Play(game);
                     break;
                 case Wiki:
                     string rawArticleText = http.GetWikipediaRawArticleText("Lost_Cities");

@@ -17,33 +17,46 @@ namespace LostCities.CardGame.WebApi.Services
             this.logger = logger;
         }
 
-        public IEnumerable<Card> InitializeDeck()
+        public GameCards GetNewGame()
+        {
+            List<ExpeditionType> expeditions = GetExpeditions();
+            List<Card> deck = InitializeDeck(expeditions);            
+            GameCards game = new GameCards(deck);
+
+            return game;
+        }
+
+        private List<Card> InitializeDeck(List<ExpeditionType> expeditions)
         {
             List<Card> deck = new List<Card>();
 
-            var expeditionColors = new[] 
-            { 
-                new { id = "B", color = ConsoleColor.Blue },
-                new { id = "Y", color = ConsoleColor.Yellow },
-                new { id = "R", color = ConsoleColor.Red },
-                new { id = "W", color = ConsoleColor.White },
-                new { id = "G", color = ConsoleColor.Green },
-            }.ToList();
+            expeditions.ForEach(e => AddExpeditionToDeck(e, deck));
 
-            expeditionColors.ForEach(ec => AddExpeditionToDeck(ec, deck));
-
+            deck.Shuffle();
             return deck;
         }
 
-        private void AddExpeditionToDeck(dynamic expeditionColor, List<Card> deck)
+        private void AddExpeditionToDeck(ExpeditionType expedition, List<Card> deck)
         {
             for (int value = 2; value <= 10; value++)
-                deck.Add(new Card(id: $"{expeditionColor.id}{value}", color:expeditionColor.color, value:value));
+                deck.Add(new Card(id: $"{expedition.Code}{value}", color:expedition.Color, value:value));
 
-            string[] bettingCardIds = new string[] { "A", "B", "C" };
+            string[] wagerCardIds = new string[] { "A", "B", "C" };
 
-            for (int i = 0; i < bettingCardIds.Length; i++)
-                deck.Add(new Card(id: $"{expeditionColor.id}{bettingCardIds[i]}", color: expeditionColor.color, value: 0));
+            for (int i = 0; i < wagerCardIds.Length; i++)
+                deck.Add(new Card(id: $"{expedition.Code}{wagerCardIds[i]}", color: expedition.Color, value: 0));
+        }
+
+        private List<ExpeditionType> GetExpeditions()
+        {
+            return  new List<ExpeditionType>()
+                {
+                    new ExpeditionType("Blue"),
+                    new ExpeditionType("Yellow"),
+                    new ExpeditionType("Red"),
+                    new ExpeditionType("White"),
+                    new ExpeditionType("Green")
+                };
         }
     }
 }
