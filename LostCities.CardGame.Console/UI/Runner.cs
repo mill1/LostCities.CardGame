@@ -7,7 +7,7 @@ namespace LostCities.CardGame.Console.UI
 {
     public class Runner
     {
-        private const string DayCheck = "d";
+        private const string NewGame = "n";
         private const string Wiki = "w";
         private const string Quit = "q";
         private bool quit;
@@ -49,7 +49,7 @@ namespace LostCities.CardGame.Console.UI
         {
             return new List<string>
             {
-                $"{DayCheck}:\tDay name of date",
+                $"{NewGame}:\tNew game",
                 $"{Wiki}:\tShow wiki",
                 $"{Quit}:\tQuit application"
             };
@@ -59,11 +59,11 @@ namespace LostCities.CardGame.Console.UI
         {
             switch (answer)
             {
-                case DayCheck:
-                    GetDaynameFromDate();
+                case NewGame:
+                    var tmp = http.Test();
                     break;
                 case Wiki:
-                    string rawArticleText = http.GetWikipediaRawArticleText("Lost_Cities", false);
+                    string rawArticleText = http.GetWikipediaRawArticleText("Lost_Cities");
                     Console.Write(ConsoleColor.Green, rawArticleText, beautify: true);
                     break;
                 case Quit:
@@ -73,14 +73,6 @@ namespace LostCities.CardGame.Console.UI
                     Console.WriteLine(ConsoleColor.Red, $"Invalid choice: {answer}");
                     break;
             }
-        }
-
-        private void GetDaynameFromDate()
-        {
-            Console.WriteLine("Date: (yyyy-M-d)");
-            DateTime date = DateTime.Parse(Console.ReadLine());
-
-            Console.WriteLine(ConsoleColor.Blue, date.DayOfWeek.ToString());
         }
     }
 }

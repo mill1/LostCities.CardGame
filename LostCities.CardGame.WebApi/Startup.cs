@@ -21,6 +21,7 @@ namespace LostCities.CardGame.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IWikipediaReaderService, WikipediaReaderService>();
+            services.AddScoped<IGameService, GameService>();
             services.AddControllers();
         }
 
