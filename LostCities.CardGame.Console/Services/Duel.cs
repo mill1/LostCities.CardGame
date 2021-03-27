@@ -18,24 +18,42 @@ namespace LostCities.CardGame.Console.Services
 
         public void Play()
         {
-            UI.Console.WriteLine(ConsoleColor.Cyan, "Shuffling and dealing the game cards...\r\n");
-            Game game = http.GetNewGame();
-            
-            // TODO lw bool playerStarts = PlayerStarts();
+            bool playerStarts = PlayerStarts();
 
-            DisplayGame(game);
+            UI.Console.WriteLine(ConsoleColor.Cyan, "Shuffling and dealing the deck...");
+            Game game = http.GetNewGame();                       
 
             bool ended = false;
 
-            // Set things up
             // Bot should not know human's cards obviously (and the other way around).
 
-            //while (!ended)
-            //{
-            //    throw new Exception("TODO");
-            //}
+            while (!ended)
+            {
+                DisplayGame(game);
+
+                if (playerStarts)
+                {
+                    UI.Console.WriteLine("Player: What do you want to do?\r\n1.\r\n2. etc.");
+                    string tmp = UI.Console.ReadLine();
+                }
+                else
+                {
+                    
+                    // TODO
+                    UI.Console.WriteLine(new string('-', 22));
+                    UI.Console.WriteLine("Bot: thinking...");
+                    // http call
+                    UI.Console.WriteLine("Bot moved card XY from A to B and drew a card from the draw pile");
+                    UI.Console.WriteLine(ConsoleColor.Gray, "(press any key to continue)");
+                    UI.Console.WriteLine(new string('-', 22));
+                    UI.Console.ReadLine();
+                }                    
+
+                playerStarts = !playerStarts;
+             }
         }
 
+        // TODO: naar UI
         private void DisplayGame(Game game)
         {
             DisplayDrawPile(game.DrawPile);
@@ -46,7 +64,7 @@ namespace LostCities.CardGame.Console.Services
 
         private void DisplayDrawPile(IEnumerable<Card> drawPile)
         {
-            UI.Console.Write(ConsoleColor.Cyan, "Draw pile:      ");
+            UI.Console.Write(ConsoleColor.Cyan, "\r\nDraw pile:      ");
             UI.Console.Write(ConsoleColor.Gray, "XX");
             UI.Console.Write(ConsoleColor.DarkCyan, $"  ({drawPile.Count()} card left)\r\n\r\n");
         }
