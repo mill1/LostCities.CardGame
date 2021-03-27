@@ -26,7 +26,7 @@ namespace LostCities.CardGame.Console.UI
             SysConsole.Write(value);
         }
 
-        public static void Write(ConsoleColor color, object value, bool beautify)
+        public static void Write(ConsoleColor color, object value, bool beautify=false)
         {
             ForegroundColor = color;
 

@@ -22,6 +22,7 @@ namespace LostCities.CardGame.Console
             services.AddSingleton(Configuration);
             services.AddSingleton<HttpClient>();
             services.AddSingleton<Http>();
+            services.AddSingleton<Duel>();
             services.AddSingleton<Runner>();
         }
     }
