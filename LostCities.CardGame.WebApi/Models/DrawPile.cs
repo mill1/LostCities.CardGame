@@ -7,7 +7,6 @@ namespace LostCities.CardGame.WebApi.Models
 {
     public class DrawPile : CardCollection
     {        
-
         public DrawPile(IEnumerable<Card> initialCards) : base(initialCards)
         {
         }

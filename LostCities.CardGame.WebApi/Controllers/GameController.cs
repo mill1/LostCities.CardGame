@@ -38,7 +38,7 @@ namespace LostCities.CardGame.WebApi.Controllers
             }
         }
 
-        private Dtos.Game MapToDto(Models.GameCards game)
+        private Dtos.Game MapToDto(Models.Game game)
         {
             Dtos.Game gameCardsDto = new Dtos.Game
             {
@@ -77,7 +77,7 @@ namespace LostCities.CardGame.WebApi.Controllers
             return new Dtos.Card()
             {
                 Id = card.Id,
-                Color = card.Color.ToString(),
+                ExpeditionType = card.ExpeditionType.Name.ToString(),
                 Value = card.Value
             };
         }

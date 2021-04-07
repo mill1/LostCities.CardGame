@@ -22,6 +22,5 @@ namespace LostCities.CardGame.WebApi.Models
             else
                 throw new Exception($"Invalid color: {name}");
         }
-
     }
 }

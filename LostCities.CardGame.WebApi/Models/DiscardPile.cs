@@ -17,6 +17,5 @@ namespace LostCities.CardGame.WebApi.Models
         {
             Expedition = expedition;
         }
-
     }
 }

@@ -17,11 +17,11 @@ namespace LostCities.CardGame.WebApi.Services
             this.logger = logger;
         }
 
-        public GameCards GetNewGame()
+        public Game GetNewGame()
         {
             List<ExpeditionType> expeditions = GetExpeditions();
             List<Card> deck = InitializeDeck(expeditions);            
-            GameCards game = new GameCards(deck);
+            Game game = new Game(deck);
 
             return game;
         }
@@ -39,12 +39,12 @@ namespace LostCities.CardGame.WebApi.Services
         private void AddExpeditionToDeck(ExpeditionType expedition, List<Card> deck)
         {
             for (int value = 2; value <= 10; value++)
-                deck.Add(new Card(id: $"{expedition.Code}{value}", color:expedition.Color, value:value));
+                deck.Add(new Card(id: $"{expedition.Code}{value}", expedition, value));
 
             string[] wagerCardIds = new string[] { "A", "B", "C" };
 
             for (int i = 0; i < wagerCardIds.Length; i++)
-                deck.Add(new Card(id: $"{expedition.Code}{wagerCardIds[i]}", color: expedition.Color, value: 0));
+                deck.Add(new Card(id: $"{expedition.Code}{wagerCardIds[i]}", expedition,  0));
         }
 
         private List<ExpeditionType> GetExpeditions()
