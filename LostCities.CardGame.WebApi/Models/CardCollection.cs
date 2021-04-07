@@ -8,32 +8,37 @@ namespace LostCities.CardGame.WebApi.Models
     {
         public List<Card> Cards { get; set;  }
 
-        public CardCollection(IEnumerable<Card> initialCards)
+        public CardCollection() 
         {
             Cards = new List<Card>();
+        }
+
+        public CardCollection(IEnumerable<Card> initialCards) : this()
+        {
+            //Cards = new List<Card>();
             Cards.AddRange(initialCards);
         }
 
-        public void MoveCardToExpedition(Card card, List<CardCollection> expeditions)
+        public void MoveCardToCardCollection(Card card, List<CardCollection> cardCollections)
         {
             if (Cards.Count() == 0)
                 throw new Exception("Collection does not contain any cards.");
 
             Cards.Remove(card);
-            // TODO
-            //GetExpeditionCards(card, expeditions).Add(card);
+            GetCardCollectionByExpedition(card, cardCollections).Cards.Add(card);
         }
 
-        //private List<CardCollection> GetExpeditionCards(Card card, List<CardCollection> expeditions)
-        //{
-        //    foreach (CardCollection expedition in expeditions)
-        //    {
-        //        if (expedition.Cards.Where(c => c.Id.StartsWith( )
-        //            return expedition.Cards;
-        //    }
+        private CardCollection GetCardCollectionByExpedition(Card card, List<CardCollection> cardCollections)
+        {
+            foreach (CardCollection cc in cardCollections)
+                if (cc.Cards.Where(c => c.ExpeditionType.Code == card.ExpeditionType.Code).Any())
+                    return cc;
 
-        //    return null;
-        //}
+            // Card collection of this expedition type not started.
+            CardCollection cardCollection = new CardCollection();
+            cardCollections.Add(cardCollection);
+            return cardCollection;
+        }
 
         public void MoveLastCardTo(List<Card> targetCards)
         {

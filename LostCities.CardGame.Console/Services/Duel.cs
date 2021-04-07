@@ -30,70 +30,93 @@ namespace LostCities.CardGame.Console.Services
                 UI.Console.DisplayGame(game);
 
                 if (playerStarts)
-                {                    
-                    bool validChoice = false;
-
-                    while (!validChoice)
-                    {
-                        UI.Console.DisplayPlayerOptions();
-
-                        string answer = UI.Console.ReadLine();
-
-                        switch (answer)
-                        {
-                            case "a":
-                                UI.Console.WriteLine(ConsoleColor.Cyan, "Enter card to add to expedition:");
-                                break;
-                            case "d":
-                                UI.Console.WriteLine(ConsoleColor.Cyan, "Enter card to discard:");
-                                break;
-                            default:
-                                UI.Console.WriteLine(ConsoleColor.Red, $"Invalid choice: {answer}");
-                                continue;
-                        }
-
-                        string cardId = UI.Console.ReadLine();
-
-                        if (!game.PlayerCards.Cards.Any(c => c.Id.Equals(cardId)))
-                            UI.Console.WriteLine(ConsoleColor.Red, $"Card not present in player hand: {cardId}");
-
-                        WebApi.Models.Card card = game.PlayerCards.Cards.Where(c => c.Id == cardId).First();
-
-                        if (answer == "a")
-                        {
-                            // Add to expedition
-                          //  game.PlayerCards.MoveCardToExpedition(card, );
-
-                        }
-
-                        //    game.PlayerCards.MoveLastCardTo()
-                        //else // discard a card
-
-                        validChoice = true;
-                    }
-
-                    // TODO
+                {
+                    ProcessPlayerTurn(game);
                 }
                 else
                 {
-                    // TODO
-                    UI.Console.WriteLine(new string('-', 22));
-                    UI.Console.WriteLine("Bot: thinking...");
-                    // http call
-                    UI.Console.WriteLine("Bot moved card XY from A to B and drew a card from the draw pile");
-                    UI.Console.WriteLine(ConsoleColor.Gray, "(press any key to continue)");
-                    UI.Console.WriteLine(new string('-', 22));
-                    UI.Console.ReadLine();
+                    ProcessBotTurn(game);
                 }                    
 
                 playerStarts = !playerStarts;
              }
         }
 
+        private void ProcessBotTurn(WebApi.Models.Game game)
+        {
+            // TODO
+            UI.Console.WriteLine(new string('-', 22));
+            UI.Console.WriteLine("Bot: thinking...");
+            // http call
+            // TODO dummy move
+            UI.Console.WriteLine("Bot moved card XY from A to B and drew a card from the draw pile");
+            UI.Console.WriteLine(ConsoleColor.Gray, "(press any key to continue)");
+            UI.Console.WriteLine(new string('-', 22));
+            UI.Console.ReadLine();
+        }
+
+        private void ProcessPlayerTurn(WebApi.Models.Game game)
+        {
+            WebApi.Models.Card card = DetermineWhichCardToPlay(game, out bool moveToExpedition);
+
+            List<WebApi.Models.CardCollection> cardCollections = moveToExpedition ? game.PlayerExpeditions : game.DiscardPiles;
+            game.PlayerCards.MoveCardToCardCollection(card, cardCollections);
+
+            game.DrawPile.MoveLastCardTo(game.PlayerCards.Cards);
+        }
+
+        private WebApi.Models.Card DetermineWhichCardToPlay(WebApi.Models.Game game, out bool moveToExpedition)
+        {
+            while (true)
+            {
+                string answer = GetPlayerOption();
+
+                if (answer != "e" && answer != "d")
+                {
+                    UI.Console.WriteLine(ConsoleColor.Red, $"Invalid choice: {answer}");
+                    continue;
+                }
+
+                string cardId = GetCardToPlay(answer);
+
+                if (!game.PlayerCards.Cards.Any(c => c.Id.Equals(cardId)))
+                    UI.Console.WriteLine(ConsoleColor.Red, $"Card not present in player hand: {cardId}");
+
+                moveToExpedition = answer == "e";
+                return game.PlayerCards.Cards.Where(c => c.Id == cardId).First();
+            }
+        }
+
+        private string GetPlayerOption()
+        {
+            UI.Console.WriteLine(ConsoleColor.Cyan,
+                "Player: What do you want to do?\r\n" +
+                "Add a card to an expedition (e)\r\n" +
+                "Discard a card (d)");
+
+            return UI.Console.ReadLine();
+        }
+
+        private static string GetCardToPlay(string answer)
+        {
+            switch (answer)
+            {
+                case "e":
+                    UI.Console.WriteLine(ConsoleColor.Cyan, "Enter card to add to expedition:");
+                    break;
+                case "d":
+                    UI.Console.WriteLine(ConsoleColor.Cyan, "Enter card to discard:");
+                    break;
+            }
+
+            return UI.Console.ReadLine();
+        }
+
         private bool PlayerStarts()
         {
             UI.Console.WriteLine("Do you want to start? (y/n)");
             string answer = UI.Console.ReadLine();
+
             return answer.Equals("y", StringComparison.OrdinalIgnoreCase);
         }
 
@@ -109,7 +132,6 @@ namespace LostCities.CardGame.Console.Services
                 
             return game;
         }
-
                                                             
         private List<WebApi.Models.CardCollection> MapToModel(IEnumerable<IEnumerable<WebApi.Dtos.Card>> cardCollectionsDto)
         {

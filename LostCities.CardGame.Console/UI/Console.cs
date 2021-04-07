@@ -82,14 +82,6 @@ namespace LostCities.CardGame.Console.UI
             SysConsole.ResetColor();
         }
 
-        public static void DisplayPlayerOptions()
-        {
-             WriteLine(ConsoleColor.Cyan, 
-                 "Player: What do you want to do?\r\n" +
-                 "Add a card to an expedition (a)\r\n" +
-                 "Discard a card (d)");
-        }
-
         public static void DisplayGame(Game game)
         {
             DisplayDrawPile(game.DrawPile);
@@ -113,9 +105,8 @@ namespace LostCities.CardGame.Console.UI
                 Write(ConsoleColor.DarkCyan, "[no discard piles yet]");
             else
             {
-                // TODO
                 foreach (var discardPile in discardPiles)
-                    Console.WriteLine(discardPile.Cards.Count());
+                    DisplayCard(discardPile.Cards.Last());
             }
             WriteLine("\r\n");
         }
@@ -127,12 +118,12 @@ namespace LostCities.CardGame.Console.UI
 
             Write(ConsoleColor.Cyan, "Cards:          ");
 
-            foreach (Card card in game.PlayerCards.Cards)
+            foreach (Card card in game.BotCards.Cards)
                 Write(ConsoleColor.Gray, "XX  ");
 
             WriteLine("");
 
-            DisplayExpeditions(game.PlayerExpeditions);
+            DisplayExpeditions(game.BotExpeditions);
         }
 
         private static void DisplayPlayerCards(Game game)
@@ -159,9 +150,8 @@ namespace LostCities.CardGame.Console.UI
                 Write(ConsoleColor.DarkCyan, "[no expeditions yet]");
             else
             {
-                // TODO
                 foreach (var expedition in expeditions)
-                    Console.WriteLine(expedition.Cards.Count());
+                    DisplayCard(expedition.Cards.Last());
             }
 
             WriteLine("");
