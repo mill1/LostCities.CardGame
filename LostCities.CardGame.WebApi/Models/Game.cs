@@ -7,31 +7,31 @@ namespace LostCities.CardGame.WebApi.Models
 {
     public class Game
     {
-        public CardCollection PlayerCards { get; }
-        public CardCollection BotCards { get; }
-        public CardCollection DrawPile { get; }
-        public List<CardCollection> PlayerExpeditions { get; }
-        public List<CardCollection> BotExpeditions { get; }        
-        public List<CardCollection> DiscardPiles { get; }
+        public Pile PlayerCards { get; }
+        public Pile BotCards { get; }
+        public Pile DrawPile { get; }
+        public List<Pile> PlayerExpeditions { get; }
+        public List<Pile> BotExpeditions { get; }        
+        public List<Pile> DiscardPiles { get; }
         
         public Game(List<Card> deck)
         {
             List<Card> hand = deck.GetRange(0, 8);
-            PlayerCards = new CardCollection(hand);
+            PlayerCards = new Pile(hand);
             deck.RemoveRange(0, 8);
 
             hand = deck.GetRange(0, 8);
-            BotCards = new CardCollection(hand);
+            BotCards = new Pile(hand);
             deck.RemoveRange(0, 8);
 
-            DrawPile = new CardCollection(deck);
-            PlayerExpeditions = new List<CardCollection>();
-            BotExpeditions = new List<CardCollection>();
-            DiscardPiles = new List<CardCollection>();
+            DrawPile = new Pile(deck);
+            PlayerExpeditions = new List<Pile>();
+            BotExpeditions = new List<Pile>();
+            DiscardPiles = new List<Pile>();
         }
 
-        public Game(CardCollection playerCards, CardCollection botCards, CardCollection drawPile,
-                    List<CardCollection> playerExpeditions, List<CardCollection> botExpeditions, List<CardCollection> discardPiles)            
+        public Game(Pile playerCards, Pile botCards, Pile drawPile,
+                    List<Pile> playerExpeditions, List<Pile> botExpeditions, List<Pile> discardPiles)            
         {
             PlayerCards = playerCards;
             BotCards = botCards;

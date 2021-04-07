@@ -85,21 +85,21 @@ namespace LostCities.CardGame.Console.UI
         public static void DisplayGame(Game game)
         {
             DisplayDrawPile(game.DrawPile);
-            DisplayBotCards(game);
-            DisplayDiscardPiles(game.DiscardPiles);
+            DisplayBotCards(game);            
+            DisplayDiscardPiles(game.DiscardPiles);            
             DisplayPlayerCards(game);
         }
 
-        private static void DisplayDrawPile(CardCollection drawPile)
+        private static void DisplayDrawPile(Pile drawPile)
         {
             Write(ConsoleColor.Cyan, "\r\nDraw pile:      ");
             Write(ConsoleColor.Gray, "XX");
-            Write(ConsoleColor.DarkCyan, $"  ({drawPile.Cards.Count()} card left)\r\n\r\n");
+            Write(ConsoleColor.DarkCyan, $"  ({drawPile.Cards.Count()} cards left)\r\n\r\n");
         }
 
-        private static void DisplayDiscardPiles(IEnumerable<CardCollection> discardPiles)
+        private static void DisplayDiscardPiles(IEnumerable<Pile> discardPiles)
         {
-            Write(ConsoleColor.Cyan, "\r\nDiscard piles:  ");
+            Write(ConsoleColor.Cyan, "Discard piles:  ");
 
             if (!discardPiles.Any())
                 Write(ConsoleColor.DarkCyan, "[no discard piles yet]");
@@ -108,9 +108,8 @@ namespace LostCities.CardGame.Console.UI
                 foreach (var discardPile in discardPiles)
                     DisplayCard(discardPile.Cards.Last());
             }
-            WriteLine("\r\n");
+            SysConsole.WriteLine("\r\n");
         }
-
 
         private static void DisplayBotCards(Game game)
         {
@@ -121,9 +120,12 @@ namespace LostCities.CardGame.Console.UI
             foreach (Card card in game.BotCards.Cards)
                 Write(ConsoleColor.Gray, "XX  ");
 
-            WriteLine("");
+            SysConsole.WriteLine();
 
             DisplayExpeditions(game.BotExpeditions);
+
+            if(!game.BotExpeditions.Any())
+                SysConsole.WriteLine();
         }
 
         private static void DisplayPlayerCards(Game game)
@@ -132,7 +134,7 @@ namespace LostCities.CardGame.Console.UI
 
             DisplayExpeditions(game.PlayerExpeditions);
 
-            game.PlayerCards.Cards = game.PlayerCards.Cards.OrderBy(c => c.Id).ToList();
+            game.PlayerCards.Cards = game.PlayerCards.Cards.OrderBy(c => c.ExpeditionType.Name).ThenBy(c => c.Value).ToList();
 
             Write(ConsoleColor.Cyan, "Cards:          ");
 
@@ -142,24 +144,47 @@ namespace LostCities.CardGame.Console.UI
             WriteLine("\r\n");
         }
 
-        private static void DisplayExpeditions(IEnumerable<CardCollection> expeditions)
+        private static void DisplayExpeditions(IEnumerable<Pile> expeditions)
         {
-            Write(ConsoleColor.Cyan, "Expeditions:    ");
+            Write(ConsoleColor.Cyan, "Expeditions:    ");            
 
             if (!expeditions.Any())
-                Write(ConsoleColor.DarkCyan, "[no expeditions yet]");
+                WriteLine(ConsoleColor.DarkCyan, "[no expeditions yet]");
             else
-            {
-                foreach (var expedition in expeditions)
-                    DisplayCard(expedition.Cards.Last());
+            {                
+                DisplayExistingExpeditions(expeditions);
+                SysConsole.WriteLine();
             }
+        }
 
-            WriteLine("");
+        private static void DisplayExistingExpeditions(IEnumerable<Pile> expeditions)
+        {
+            int maxCount = expeditions.Select(cc => cc.Cards.Count).Max();
+
+            for (int i = 1; i <= maxCount; i++)
+            {
+                DisplayExpeditionsRecord(expeditions, i);
+            }
+        }
+
+        private static void DisplayExpeditionsRecord(IEnumerable<Pile> expeditions, int i)
+        {
+            if (i > 1)
+                Write(new string(' ', 16));
+
+            foreach (var expedition in expeditions)
+            {
+                if (i > expedition.Cards.Count)
+                    DisplayCard(new Card("", new ExpeditionType("Blue"), 0));
+                else
+                    DisplayCard(expedition.Cards.ElementAt(i - 1));
+            }
+            SysConsole.WriteLine();
         }
 
         private static void DisplayCard(Card card)
-        {
-            Write(card.ExpeditionType.Color, $"{card.Id}  ");
+        {            
+            Write(card.ExpeditionType.Color, card.Id.PadRight(4, ' '));
         }
     }
 }

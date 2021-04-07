@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LostCities.CardGame.WebApi.Models
 {
-    public class DiscardPile : CardCollection
+    public class DiscardPile : Pile
     {
         public ExpeditionType Expedition { get; }
 

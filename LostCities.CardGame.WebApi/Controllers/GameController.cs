@@ -5,6 +5,7 @@ using LostCities.CardGame.WebApi.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace LostCities.CardGame.WebApi.Controllers
 {
@@ -12,11 +13,13 @@ namespace LostCities.CardGame.WebApi.Controllers
     [Route("[controller]")]
     public class GameController : ControllerBase
     {
+        private readonly IMapper mapper;
         private readonly IGameService gameService;
         private readonly ILogger<GameController> logger;
 
-        public GameController(IGameService gameService, ILogger<GameController> logger)
+        public GameController(IMapper mapper, IGameService gameService, ILogger<GameController> logger)
         {
+            this.mapper = mapper;
             this.gameService = gameService;
             this.logger = logger;
         }
@@ -28,7 +31,7 @@ namespace LostCities.CardGame.WebApi.Controllers
             {
                 var newGame = gameService.GetNewGame();
 
-                return Ok(MapToDto(newGame));
+                return Ok(mapper.MapToDto(newGame));
             }
             catch (Exception e)
             {
@@ -38,48 +41,43 @@ namespace LostCities.CardGame.WebApi.Controllers
             }
         }
 
-        private Dtos.Game MapToDto(Models.Game game)
+        [HttpPost("playturn")]
+        public IActionResult PlayTurn(Dtos.Game gameDto)
         {
-            Dtos.Game gameCardsDto = new Dtos.Game
+            try
             {
-                PlayerCards = MapToDto(game.PlayerCards.Cards),
-                BotCards = MapToDto(game.BotCards.Cards),
-                DrawPile = MapToDto(game.DrawPile.Cards),
-                PlayerExpeditions = MapToDto(game.PlayerExpeditions),
-                BotExpeditions = MapToDto(game.BotExpeditions),               
-                DiscardPiles = MapToDto(game.DiscardPiles)
-            };
-            return gameCardsDto;
+                if (gameDto == null)
+                    return BadRequest("game object to cannot be null.");
+
+                var game = mapper.MapToModel(gameDto);
+
+                // TODO dummy move
+                Thread.Sleep(2500);
+                Models.Card card = game.BotCards.Cards.First();
+
+                if (card.Value % 2 == 0)
+                {
+                    card = GetLowestValueOfExpeditionType(game, card.ExpeditionType);
+                    game.BotCards.MoveCardToPile(card, game.BotExpeditions);
+                }
+                else
+                    game.BotCards.MoveCardToPile(card, game.DiscardPiles);
+
+                game.DrawPile.MoveLastCardTo(game.BotCards.Cards);
+
+                return Ok(mapper.MapToDto(game));
+            }
+            catch (Exception e)
+            {
+                string message = $"Playing the turn failed.\r\nException:\r\n{e}";
+                logger.LogError($"{message}", e);
+                return BadRequest(message);
+            }
         }
 
-        private IEnumerable<IEnumerable<Dtos.Card>> MapToDto(IEnumerable<Models.CardCollection> cardCollections)
+        private Models.Card GetLowestValueOfExpeditionType(Models.Game game, Models.ExpeditionType expeditionType)
         {
-            List<IEnumerable<Dtos.Card>> cardsListDto = new List<IEnumerable<Dtos.Card>>();
-
-            foreach (Models.CardCollection cardCollection in cardCollections)
-                cardsListDto.Add(MapToDto(cardCollection.Cards));
-
-            return cardsListDto;
-        }
-
-        private IEnumerable<Dtos.Card> MapToDto(IEnumerable<Models.Card> cards)
-        {
-            List<Dtos.Card> cardsDto = new List<Dtos.Card>();
-
-            foreach (var card in cards)
-                cardsDto.Add(MapToDto(card));
-
-            return cardsDto;
-        }            
-
-        private Dtos.Card MapToDto(Models.Card card)
-        {
-            return new Dtos.Card()
-            {
-                Id = card.Id,
-                ExpeditionType = card.ExpeditionType.Name.ToString(),
-                Value = card.Value
-            };
+            return game.BotCards.Cards.Where(c => c.ExpeditionType.Code == expeditionType.Code).OrderBy(x => x.Value).First();
         }
     }
 }
