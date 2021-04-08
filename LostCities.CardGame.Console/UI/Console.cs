@@ -93,14 +93,14 @@ namespace LostCities.CardGame.Console.UI
 
         private static void DisplayDrawPile(IPile drawPile)
         {
-            Write(ConsoleColor.Cyan, "\r\nDraw pile:      ");
+            Write(ConsoleColor.Cyan, "\r\nDraw pile:          ");
             Write(ConsoleColor.Gray, "XX");
             Write(ConsoleColor.DarkCyan, $"  ({drawPile.Cards.Count()} cards left)\r\n\r\n");
         }
 
         private static void DisplayDiscardPiles(IEnumerable<IPile> discardPiles)
         {
-            Write(ConsoleColor.Cyan, "Discard piles:  ");
+            Write(ConsoleColor.Cyan, "Discard piles:      ");
 
             if (!discardPiles.Any())
                 Write(ConsoleColor.DarkCyan, "[no discard piles yet]");
@@ -108,6 +108,12 @@ namespace LostCities.CardGame.Console.UI
             {
                 foreach (var discardPile in discardPiles)
                     DisplayCardId(discardPile.Cards.Last());
+
+                Write(ConsoleColor.Cyan, "\r\nDiscard cards #:    ");
+
+                foreach (var discardPile in discardPiles)
+                    DisplayDiscardPileCount(discardPile.Cards);
+
             }
             SysConsole.WriteLine("\r\n");
         }
@@ -116,7 +122,7 @@ namespace LostCities.CardGame.Console.UI
         {
             WriteLine(ConsoleColor.Cyan, "BOT: (that's your opponent)");
 
-            Write(ConsoleColor.Cyan, "Cards:          ");
+            Write(ConsoleColor.Cyan, "Cards:              ");
 
             foreach (Card card in game.BotCards.Cards)
                 Write(ConsoleColor.Gray, "XX  ");
@@ -137,7 +143,7 @@ namespace LostCities.CardGame.Console.UI
 
             game.PlayerCards.Cards = game.PlayerCards.Cards.OrderBy(c => c.ExpeditionType.Name).ThenBy(c => c.Value).ToList();
 
-            Write(ConsoleColor.Cyan, "Cards:          ");
+            Write(ConsoleColor.Cyan, "Cards:              ");
 
             foreach (Card card in game.PlayerCards.Cards)
                 DisplayCardId(card);
@@ -147,7 +153,7 @@ namespace LostCities.CardGame.Console.UI
 
         private static void DisplayExpeditions(IEnumerable<IPile> expeditions)
         {
-            Write(ConsoleColor.Cyan, "Expeditions:    ");            
+            Write(ConsoleColor.Cyan, "Expeditions:        ");            
 
             if (!expeditions.Any())
                 WriteLine(ConsoleColor.DarkCyan, "[no expeditions yet]");
@@ -183,22 +189,39 @@ namespace LostCities.CardGame.Console.UI
             SysConsole.WriteLine();
         }
 
-        public static void DisplayExistingDiscardPileNames(List<IPile> discardPiles)
+        public static void DisplayExistingDiscardPiles(List<IPile> discardPiles)
         {
-            Write(ConsoleColor.White, "Discard piles:  ");
+            Write(ConsoleColor.White, "Discard piles:      ");
 
             foreach (var pile in discardPiles)
             {
                 Card card = pile.Cards.First();
 
-                Write(card.ExpeditionType.Color, card.ExpeditionType.Name + " ");
+                Write(card.ExpeditionType.Color, $"{card.ExpeditionType.Name} ({card.ExpeditionType.Code.ToLower()})  ");
             }
+            SysConsole.WriteLine();
+        }
+
+        public static void DisplayCardIds(IEnumerable<Card> cards)
+        {
+            Write(ConsoleColor.White, "Card id's:          ");
+
+            foreach (var card in cards)
+                DisplayCardId(card);
+
             SysConsole.WriteLine();
         }
 
         private static void DisplayCardId(Card card)
         {            
             Write(card.ExpeditionType.Color, card.Id.PadRight(4, ' '));
+        }
+
+        private static void DisplayDiscardPileCount(List<Card> cards)
+        {
+            string count = $"[{cards.Count}]";
+
+            Write(cards.First().ExpeditionType.Color, count.PadRight(4, ' '));
         }
     }
 }
