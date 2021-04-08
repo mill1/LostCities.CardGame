@@ -61,7 +61,7 @@ namespace LostCities.CardGame.Console.Services
 
             while (answer != "e" && answer != "d")
             {
-                answer = GetPlayerOptions();
+                answer = GetPlayerOptions(game);
 
                 if (answer == "s")
                 {
@@ -181,15 +181,17 @@ namespace LostCities.CardGame.Console.Services
             }
         }
 
-        private string GetPlayerOptions()
+        private string GetPlayerOptions(Game game)
         {
+            string optionShowDiscardPileCards = game.DiscardPiles.Any() ? "\r\n- Show discard pile cards (s)" : string.Empty;
+
             while (true)
             {                
                 UI.Console.WriteLine(ConsoleColor.White,
                 "Player: What do you want to do?\r\n" +
                 "- Add a card to an expedition (e)\r\n" +
-                "- Discard a card (d)\r\n" +
-                "- Show discard pile cards (s)");
+                "- Discard a card (d)" + 
+                optionShowDiscardPileCards);
 
                 string answer = UI.Console.ReadLine();
 
