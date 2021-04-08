@@ -1,5 +1,7 @@
 ﻿using LostCities.CardGame.Console.Services;
 using LostCities.CardGame.Console.UI;
+using LostCities.CardGame.WebApi;
+using LostCities.CardGame.WebApi.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
@@ -22,7 +24,9 @@ namespace LostCities.CardGame.Console
             services.AddSingleton(Configuration);
             services.AddSingleton<HttpClient>();
             services.AddSingleton<Http>();
+            services.AddSingleton<Duel>();
             services.AddSingleton<Runner>();
+            services.AddSingleton<IMapper, Mapper>();
         }
     }
 }

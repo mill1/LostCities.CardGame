@@ -7,15 +7,15 @@ namespace LostCities.CardGame.WebApi.Models
 {
     public class Card
     {
-        public Card(string id, ConsoleColor color, int value)
+        public Card(string id, ExpeditionType expeditionType, int value)
         {
             Id = id;
-            Color = color;
+            ExpeditionType = expeditionType;
             Value = value;
         }
 
         public string Id { get; }
-        public ConsoleColor Color { get; }
+        public ExpeditionType ExpeditionType { get; }
         public int Value { get; } // Wager card: Value == 0, otherwise expedition card
     }
 }

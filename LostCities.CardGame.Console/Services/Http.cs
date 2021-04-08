@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-//using System.Text.Json;
+using System.Text;
 
 namespace LostCities.CardGame.Console.Services
 {
@@ -31,6 +31,19 @@ namespace LostCities.CardGame.Console.Services
             return game;
         }
 
+        public WebApi.Dtos.Game PostBotTurn(WebApi.Dtos.Game gameDto)
+        {
+            var ser = JsonConvert.SerializeObject(gameDto);
+
+            HttpResponseMessage response = client.PostAsync("game/playturn", new StringContent(ser, Encoding.UTF8, "application/json")).Result;
+
+            string result = HandleResponse(response);
+
+            WebApi.Dtos.Game reponse = JsonConvert.DeserializeObject<WebApi.Dtos.Game>(result);
+
+            return reponse;
+        }
+
         public string GetWikipediaRawArticleText(string articleTitle)
         {
             string uri = $"wikipediareader/rawarticle/{articleTitle}";
@@ -53,7 +66,7 @@ namespace LostCities.CardGame.Console.Services
             if (response.IsSuccessStatusCode)
                 return result;
             else
-                throw new Exception($"response did not indicate succes. Result (between quotes)='{result}'");
+                throw new Exception($"response did not indicate succes. Result ='{result}'");
         }
     }
 }

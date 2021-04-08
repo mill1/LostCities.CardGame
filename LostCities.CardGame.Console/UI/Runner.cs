@@ -13,10 +13,12 @@ namespace LostCities.CardGame.Console.UI
         private bool quit;
 
         private readonly Http http;
+        private readonly Duel duel;
 
-        public Runner(Http http)
+        public Runner(Http http, Duel duel)
         {
             this.http = http;
+            this.duel = duel;
 
             quit = false;
 
@@ -59,9 +61,8 @@ namespace LostCities.CardGame.Console.UI
         {
             switch (answer)
             {
-                case NewDuel:
-                    var game  = http.GetNewGame();                    
-                    new Duel().Play(game);
+                case NewDuel:                    
+                    duel.Play();
                     break;
                 case Wiki:
                     string rawArticleText = http.GetWikipediaRawArticleText("Lost_Cities");

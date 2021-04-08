@@ -5,6 +5,6 @@ namespace LostCities.CardGame.WebApi.Interfaces
 {
     public interface IGameService
     {
-        public GameCards GetNewGame();
+        public Game GetNewGame();
     }
 }
