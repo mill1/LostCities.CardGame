@@ -28,20 +28,22 @@ namespace LostCities.CardGame.WebApi.Models
             GetPileByExpedition(card, piles).Cards.Add(card);
         }
 
-        public void DrawDiscardCard(Game game, IPile handCards)
+        public Card DrawDiscardCard(Game game, IPile handCards)
         {
-            MoveLastCardToHand(handCards);
+            Card card = MoveLastCardToHand(handCards);
 
             if (!this.Cards.Any())
                 game.DiscardPiles.Remove(this);
+
+            return card;
         }
 
-        public void DrawCard(IPile handCards)
+        public Card DrawCard(IPile handCards)
         {
-            MoveLastCardToHand(handCards);
+            return MoveLastCardToHand(handCards);
         }
 
-        private void MoveLastCardToHand(IPile handCards)
+        private Card MoveLastCardToHand(IPile handCards)
         {
             if (Cards.Count() == 0)
                 throw new Exception("The pile is empty.");
@@ -49,6 +51,8 @@ namespace LostCities.CardGame.WebApi.Models
             Card card = Cards.Last();
             Cards.Remove(card);
             handCards.Cards.Add(card);
+
+            return card;
         }
 
         private IPile GetPileByExpedition(Card card, List<IPile> piles)

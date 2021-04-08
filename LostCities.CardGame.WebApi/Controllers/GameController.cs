@@ -62,12 +62,17 @@ namespace LostCities.CardGame.WebApi.Controllers
                 {
                     card = GetLowestValueOfExpeditionType(game, card.ExpeditionType);
                     game.BotCards.MoveCardToPile(card, game.BotExpeditions);
+                    game.DescriptionLastTurn = $"Bot moved card {card.Id} to expedition {card.ExpeditionType.Name}";
                 }
                 else
+                {
                     game.BotCards.MoveCardToPile(card, game.DiscardPiles);
+                    game.DescriptionLastTurn = $"Bot moved card {card.Id} to discard pile {card.ExpeditionType.Name}";
+                }                    
 
                 // Never take from a discard pile :)
                 game.DrawPile.DrawCard(game.BotCards);
+                game.DescriptionLastTurn += " and drew a card from the draw pile.";
 
                 return Ok(mapper.MapToDto(game));
             }

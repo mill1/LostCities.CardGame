@@ -37,7 +37,7 @@ namespace LostCities.CardGame.Console.Services
                     game = ProcessTurnBot(game);
 
                 playersTurn = !playersTurn;
-             }
+             }             
 
              // TODO: eindstand uitrekenen
              //TODO : winnaar bepalen en kaarten bot tonen
@@ -45,35 +45,39 @@ namespace LostCities.CardGame.Console.Services
 
         private Game ProcessTurnBot(Game game)
         {
-            UI.Console.WriteLine(new string('-', 22));
+            UI.Console.WriteLine(ConsoleColor.DarkCyan, game.DescriptionLastTurn);
+            UI.Console.WriteLine(new string('-', 75));
             UI.Console.WriteLine("Bot: thinking...");
             WebApi.Dtos.Game gameDto = http.PostBotTurn(mapper.MapToDto(game));
-            UI.Console.WriteLine(new string('-', 22));
+            UI.Console.WriteLine(ConsoleColor.DarkCyan, gameDto.DescriptionLastTurn);
+            UI.Console.WriteLine(new string('-', 75));
 
             return mapper.MapToModel(gameDto);
         }
 
         private void ProcessTurnPlayer(Game game)
         {
-            Card card = DetermineWhichCardToPlace(game, out bool moveToExpedition);
+            Card placeCard = DetermineWhichCardToPlace(game, out bool moveToExpedition);
 
             List<IPile> piles = moveToExpedition ? game.PlayerExpeditions : game.DiscardPiles;
 
-            game.PlayerCards.MoveCardToPile(card, piles);
+            game.PlayerCards.MoveCardToPile(placeCard, piles);
 
-            UI.Console.DisplayGame(game);
-
-            IPile pile = DetermineFromWhichPileToDraw(game, card, out bool drawFromDiscardPile);
+            IPile pile = DetermineFromWhichPileToDraw(game, placeCard, out bool drawFromDiscardPile);
 
             if (drawFromDiscardPile)
             {
                 IPile discardPile = game.DiscardPiles.Where(p => p == pile).First();
 
-                discardPile.DrawDiscardCard(game, game.PlayerCards);
+                Card drawCard = discardPile.DrawDiscardCard(game, game.PlayerCards);
+
+                game.DescriptionLastTurn = $"Player drew card {drawCard.Id} from the {drawCard.ExpeditionType.Name} discard pile.";
             }
             else
-                pile.DrawCard(game.PlayerCards);
-
+            {
+                Card drawCard = pile.DrawCard(game.PlayerCards);
+                game.DescriptionLastTurn = $"Player drew card {drawCard.Id} from the draw pile.";
+            }            
         }
 
         private IPile DetermineFromWhichPileToDraw(Game game, Card placedCard, out bool drawFromDiscardPile)
@@ -105,9 +109,8 @@ namespace LostCities.CardGame.Console.Services
         private Card DetermineWhichCardToPlace(Game game, out bool moveToExpedition)
         {
             while (true)
-            {
+            {                
                 string answer = GetPlayerOptionsPlaceCard();
-
                 string cardId = GetCardToPlace(answer);
 
                 if (!CardExistsById(cardId, game.PlayerCards.Cards))
@@ -154,7 +157,7 @@ namespace LostCities.CardGame.Console.Services
         private string GetPlayerOptionsPlaceCard()
         {
             while (true)
-            {
+            {                
                 UI.Console.WriteLine(ConsoleColor.White,
                 "Player: What do you want to do?\r\n" +
                 "- Add a card to an expedition (e)\r\n" +

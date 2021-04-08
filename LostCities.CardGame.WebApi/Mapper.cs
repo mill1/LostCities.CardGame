@@ -17,7 +17,8 @@ namespace LostCities.CardGame.WebApi
                 DrawPile = MapToDto(game.DrawPile.Cards),
                 PlayerExpeditions = MapToDto(game.PlayerExpeditions),
                 BotExpeditions = MapToDto(game.BotExpeditions),
-                DiscardPiles = MapToDto(game.DiscardPiles)
+                DiscardPiles = MapToDto(game.DiscardPiles),
+                DescriptionLastTurn = game.DescriptionLastTurn
             };
             return gameCardsDto;
         }
@@ -61,6 +62,8 @@ namespace LostCities.CardGame.WebApi
                 MapToModel(gameDto.PlayerExpeditions),
                 MapToModel(gameDto.BotExpeditions),
                 MapToModel(gameDto.DiscardPiles));
+
+            game.DescriptionLastTurn = gameDto.DescriptionLastTurn;
 
             return game;
         }

@@ -14,7 +14,9 @@ namespace LostCities.CardGame.WebApi.Models
         public List<IPile> PlayerExpeditions { get; }
         public List<IPile> BotExpeditions { get; }        
         public List<IPile> DiscardPiles { get; }
-        
+
+        public string DescriptionLastTurn { get; set; } = String.Empty;
+
         public Game(List<Card> deck)
         {
             List<Card> hand = deck.GetRange(0, 8);

@@ -10,7 +10,7 @@ namespace LostCities.CardGame.WebApi.Interfaces
     {
         public List<Card> Cards { get; set; }
         public void MoveCardToPile(Card card, List<IPile> piles);
-        public void DrawDiscardCard(Game game, IPile handCards);
-        public void DrawCard(IPile handCards);
+        public Card DrawDiscardCard(Game game, IPile handCards);
+        public Card DrawCard(IPile handCards);
     }
 }

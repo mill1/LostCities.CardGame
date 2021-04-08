@@ -11,5 +11,6 @@ namespace LostCities.CardGame.WebApi.Dtos
         public IEnumerable<IEnumerable<Card>> PlayerExpeditions { get; set; }
         public IEnumerable<IEnumerable<Card>> BotExpeditions { get; set; }
         public IEnumerable<IEnumerable<Card>> DiscardPiles { get; set; }
+        public string DescriptionLastTurn { get; set; }
     }
 }
