@@ -22,7 +22,7 @@ namespace LostCities.CardGame.WebApi
             return gameCardsDto;
         }
 
-        private IEnumerable<IEnumerable<Dtos.Card>> MapToDto(IEnumerable<Models.Pile> piles)
+        private IEnumerable<IEnumerable<Dtos.Card>> MapToDto(IEnumerable<IPile> piles)
         {
             List<IEnumerable<Dtos.Card>> cardsListDto = new List<IEnumerable<Dtos.Card>>();
 
@@ -65,9 +65,9 @@ namespace LostCities.CardGame.WebApi
             return game;
         }
 
-        private List<Models.Pile> MapToModel(IEnumerable<IEnumerable<Dtos.Card>> pilesDto)
+        private List<IPile> MapToModel(IEnumerable<IEnumerable<Dtos.Card>> pilesDto)
         {
-            List<Models.Pile> piles = new List<Models.Pile>();
+            List<IPile> piles = new List<IPile>();
 
             foreach (IEnumerable<Dtos.Card> cardsDto in pilesDto)
                 piles.Add(new Models.Pile(MapToModel(cardsDto)));

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LostCities.CardGame.WebApi.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,12 +8,12 @@ namespace LostCities.CardGame.WebApi.Models
 {
     public class Game
     {
-        public Pile PlayerCards { get; }
-        public Pile BotCards { get; }
-        public Pile DrawPile { get; }
-        public List<Pile> PlayerExpeditions { get; }
-        public List<Pile> BotExpeditions { get; }        
-        public List<Pile> DiscardPiles { get; }
+        public IPile PlayerCards { get; }
+        public IPile BotCards { get; }
+        public IPile DrawPile { get; }
+        public List<IPile> PlayerExpeditions { get; }
+        public List<IPile> BotExpeditions { get; }        
+        public List<IPile> DiscardPiles { get; }
         
         public Game(List<Card> deck)
         {
@@ -25,13 +26,13 @@ namespace LostCities.CardGame.WebApi.Models
             deck.RemoveRange(0, 8);
 
             DrawPile = new Pile(deck);
-            PlayerExpeditions = new List<Pile>();
-            BotExpeditions = new List<Pile>();
-            DiscardPiles = new List<Pile>();
+            PlayerExpeditions = new List<IPile>();
+            BotExpeditions = new List<IPile>();
+            DiscardPiles = new List<IPile>();
         }
 
-        public Game(Pile playerCards, Pile botCards, Pile drawPile,
-                    List<Pile> playerExpeditions, List<Pile> botExpeditions, List<Pile> discardPiles)            
+        public Game(IPile playerCards, IPile botCards, IPile drawPile,
+                    List<IPile> playerExpeditions, List<IPile> botExpeditions, List<IPile> discardPiles)            
         {
             PlayerCards = playerCards;
             BotCards = botCards;

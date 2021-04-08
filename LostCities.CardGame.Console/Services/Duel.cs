@@ -3,6 +3,7 @@ using System.Text;
 using System;
 using System.Linq;
 using LostCities.CardGame.WebApi.Interfaces;
+using LostCities.CardGame.WebApi.Models;
 
 namespace LostCities.CardGame.Console.Services
 {
@@ -24,7 +25,7 @@ namespace LostCities.CardGame.Console.Services
             UI.Console.WriteLine(ConsoleColor.DarkCyan, "Shuffling and dealing the deck...");
             WebApi.Dtos.Game gameDto = http.GetNewGame();
 
-            WebApi.Models.Game game = mapper.MapToModel(gameDto);
+            Game game = mapper.MapToModel(gameDto);
 
             while (game.DrawPile.Cards.Count() > 0)
             {
@@ -42,7 +43,7 @@ namespace LostCities.CardGame.Console.Services
              //TODO : winnaar bepalen en kaarten bot tonen
         }
 
-        private WebApi.Models.Game ProcessTurnBot(WebApi.Models.Game game)
+        private Game ProcessTurnBot(Game game)
         {
             UI.Console.WriteLine(new string('-', 22));
             UI.Console.WriteLine("Bot: thinking...");
@@ -52,47 +53,67 @@ namespace LostCities.CardGame.Console.Services
             return mapper.MapToModel(gameDto);
         }
 
-        private void ProcessTurnPlayer(WebApi.Models.Game game)
+        private void ProcessTurnPlayer(Game game)
         {
-            WebApi.Models.Card card = DetermineWhichCardToPlace(game, out bool moveToExpedition);
+            Card card = DetermineWhichCardToPlace(game, out bool moveToExpedition);
 
-            List<WebApi.Models.Pile> piles = moveToExpedition ? game.PlayerExpeditions : game.DiscardPiles;
+            List<IPile> piles = moveToExpedition ? game.PlayerExpeditions : game.DiscardPiles;
 
             game.PlayerCards.MoveCardToPile(card, piles);
 
-            WebApi.Models.Pile pile = DetermineFromWhichPileToDraw(game);
+            UI.Console.DisplayGame(game);
 
-            pile.MoveLastCardTo(game.PlayerCards.Cards);
+            IPile pile = DetermineFromWhichPileToDraw(game, card, out bool drawFromDiscardPile);
+
+            if (drawFromDiscardPile)
+            {
+                IPile discardPile = game.DiscardPiles.Where(p => p == pile).First();
+
+                discardPile.DrawDiscardCard(game, game.PlayerCards);
+            }
+            else
+                pile.DrawCard(game.PlayerCards);
+
         }
 
-        private WebApi.Models.Pile DetermineFromWhichPileToDraw(WebApi.Models.Game game)
+        private IPile DetermineFromWhichPileToDraw(Game game, Card placedCard, out bool drawFromDiscardPile)
         {
             if (game.DiscardPiles.Count == 0)
+            {
+                drawFromDiscardPile = false;
                 return game.DrawPile;
+            }
 
-            // TODO hierzoods
-            //while (true)
-            //{
+            while (true)
+            {
+                string answer = GetPlayerOptionsDrawCard();
+                var pile = GetPileToDrawFrom(answer, game, out drawFromDiscardPile);
 
-            //}
-            return null;
+                if (pile == null)
+                    continue;
+
+                if (pile.Cards.Last() == placedCard)
+                {
+                    UI.Console.WriteLine(ConsoleColor.Red, "It is not allowed to draw the card you just placed.");
+                    continue;
+                }
+
+                return pile;
+            }
         }
 
-        private WebApi.Models.Card DetermineWhichCardToPlace(WebApi.Models.Game game, out bool moveToExpedition)
+        private Card DetermineWhichCardToPlace(Game game, out bool moveToExpedition)
         {
             while (true)
             {
                 string answer = GetPlayerOptionsPlaceCard();
 
-                if (!ValidPlayerOptionPlaceCard(answer))
-                    continue;
-
                 string cardId = GetCardToPlace(answer);
 
-                if (!CardExistById(cardId, game.PlayerCards.Cards))
+                if (!CardExistsById(cardId, game.PlayerCards.Cards))
                     continue;
 
-                WebApi.Models.Card card = game.PlayerCards.Cards.Where(c => c.Id.Equals(cardId, StringComparison.OrdinalIgnoreCase)).First();
+                Card card = game.PlayerCards.Cards.Where(c => c.Id.Equals(cardId, StringComparison.OrdinalIgnoreCase)).First();
 
                 if (answer == "e")
                     if (InvalidExpeditionCard(game.PlayerExpeditions, card))
@@ -103,10 +124,10 @@ namespace LostCities.CardGame.Console.Services
             }
         }
 
-        private bool InvalidExpeditionCard(List<WebApi.Models.Pile> expeditions, WebApi.Models.Card card)
+        private bool InvalidExpeditionCard(List<IPile> expeditions, Card card)
         {
             // Is the selected card lower than the max value of the corresponding expedition (if any)?
-            List<WebApi.Models.Card> flattened = expeditions.SelectMany(cc => cc.Cards).ToList();
+            List<Card> flattened = expeditions.SelectMany(pile => pile.Cards).ToList();
 
             var highestCard = flattened.Where(c => c.ExpeditionType.Code == card.ExpeditionType.Code).OrderByDescending(c => c.Value).FirstOrDefault();
 
@@ -119,7 +140,7 @@ namespace LostCities.CardGame.Console.Services
             return false;
         }
 
-        private bool CardExistById(string cardId, List<WebApi.Models.Card> cards)
+        private bool CardExistsById(string cardId, List<Card> cards)
         {
             if (cards.Any(c => c.Id.Equals(cardId, StringComparison.OrdinalIgnoreCase)))
                 return true;
@@ -130,27 +151,74 @@ namespace LostCities.CardGame.Console.Services
             }
         }
 
-        private bool ValidPlayerOptionPlaceCard(string answer)
-        {
-            if (answer != "e" && answer != "d")
-            {
-                UI.Console.WriteLine(ConsoleColor.Red, $"Invalid option: {answer}");
-                return false;
-            }
-            return true;
-        }
-
         private string GetPlayerOptionsPlaceCard()
         {
-            UI.Console.WriteLine(ConsoleColor.White,
+            while (true)
+            {
+                UI.Console.WriteLine(ConsoleColor.White,
                 "Player: What do you want to do?\r\n" +
                 "- Add a card to an expedition (e)\r\n" +
                 "- Discard a card (d)");
 
-            return UI.Console.ReadLine();
+                string answer = UI.Console.ReadLine();
+
+                if (answer == "e" || answer == "d")
+                    return answer;
+                else
+                    UI.Console.WriteLine(ConsoleColor.Red, $"Invalid option: {answer}");                
+            }            
         }
 
-        private static string GetCardToPlace(string answer)
+        private string GetPlayerOptionsDrawCard()
+        {
+            while (true)
+            {
+                UI.Console.WriteLine(ConsoleColor.White,
+                "Player: From which pile do you want to draw a card?\r\n" +
+                "- From the draw pile (p)\r\n" +
+                "- From a discard pile (d)");
+
+                string answer = UI.Console.ReadLine();
+
+                if (answer == "p" || answer == "d")
+                    return answer;
+                else
+                    UI.Console.WriteLine(ConsoleColor.Red, $"Invalid option: {answer}");
+            }
+        }
+
+        private IPile GetPileToDrawFrom(string answer, Game game, out bool drawFromDiscardPile)
+        {
+            if (answer == "p")
+            {
+                drawFromDiscardPile = false;
+                return game.DrawPile;
+            }                
+            else // answer == "d" (discard piles), other options have been handled
+            {
+                drawFromDiscardPile = true;
+
+                if (game.DiscardPiles.Count == 1)
+                    return game.DiscardPiles.First();                
+                else                                 
+                    return DetermineFromWhichDiscardPileToDraw(game.DiscardPiles);
+            }
+        }
+
+        private IPile DetermineFromWhichDiscardPileToDraw(List<IPile> discardPiles)
+        {
+            while (true)
+            {
+                UI.Console.WriteLine(ConsoleColor.White, "From which pile do you want to draw a card?");
+
+                UI.Console.DisplayExistingDiscardPileNames(discardPiles);
+
+                // TODO
+                return null;
+            }
+        }
+
+        private string GetCardToPlace(string answer)
         {
             switch (answer)
             {

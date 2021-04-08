@@ -52,8 +52,11 @@ namespace LostCities.CardGame.WebApi.Controllers
                 var game = mapper.MapToModel(gameDto);
 
                 // TODO dummy move
-                Thread.Sleep(2500);
-                Models.Card card = game.BotCards.Cards.First();
+                Thread.Sleep(2500);                
+
+                Random r = new Random();
+                int rInt = r.Next(0, 7);
+                Models.Card card = game.BotCards.Cards.ElementAt(rInt);
 
                 if (card.Value % 2 == 0)
                 {
@@ -63,7 +66,8 @@ namespace LostCities.CardGame.WebApi.Controllers
                 else
                     game.BotCards.MoveCardToPile(card, game.DiscardPiles);
 
-                game.DrawPile.MoveLastCardTo(game.BotCards.Cards);
+                // Never take from a discard pile :)
+                game.DrawPile.DrawCard(game.BotCards);
 
                 return Ok(mapper.MapToDto(game));
             }

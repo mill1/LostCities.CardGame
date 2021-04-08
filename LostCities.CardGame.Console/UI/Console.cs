@@ -1,4 +1,5 @@
-﻿using LostCities.CardGame.WebApi.Models;
+﻿using LostCities.CardGame.WebApi.Interfaces;
+using LostCities.CardGame.WebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,14 +91,14 @@ namespace LostCities.CardGame.Console.UI
             DisplayPlayerCards(game);
         }
 
-        private static void DisplayDrawPile(Pile drawPile)
+        private static void DisplayDrawPile(IPile drawPile)
         {
             Write(ConsoleColor.Cyan, "\r\nDraw pile:      ");
             Write(ConsoleColor.Gray, "XX");
             Write(ConsoleColor.DarkCyan, $"  ({drawPile.Cards.Count()} cards left)\r\n\r\n");
         }
 
-        private static void DisplayDiscardPiles(IEnumerable<Pile> discardPiles)
+        private static void DisplayDiscardPiles(IEnumerable<IPile> discardPiles)
         {
             Write(ConsoleColor.Cyan, "Discard piles:  ");
 
@@ -106,7 +107,7 @@ namespace LostCities.CardGame.Console.UI
             else
             {
                 foreach (var discardPile in discardPiles)
-                    DisplayCard(discardPile.Cards.Last());
+                    DisplayCardId(discardPile.Cards.Last());
             }
             SysConsole.WriteLine("\r\n");
         }
@@ -139,12 +140,12 @@ namespace LostCities.CardGame.Console.UI
             Write(ConsoleColor.Cyan, "Cards:          ");
 
             foreach (Card card in game.PlayerCards.Cards)
-                DisplayCard(card);
+                DisplayCardId(card);
 
             WriteLine("\r\n");
         }
 
-        private static void DisplayExpeditions(IEnumerable<Pile> expeditions)
+        private static void DisplayExpeditions(IEnumerable<IPile> expeditions)
         {
             Write(ConsoleColor.Cyan, "Expeditions:    ");            
 
@@ -157,9 +158,9 @@ namespace LostCities.CardGame.Console.UI
             }
         }
 
-        private static void DisplayExistingExpeditions(IEnumerable<Pile> expeditions)
+        private static void DisplayExistingExpeditions(IEnumerable<IPile> expeditions)
         {
-            int maxCount = expeditions.Select(cc => cc.Cards.Count).Max();
+            int maxCount = expeditions.Select(pile => pile.Cards.Count).Max();
 
             for (int i = 1; i <= maxCount; i++)
             {
@@ -167,7 +168,7 @@ namespace LostCities.CardGame.Console.UI
             }
         }
 
-        private static void DisplayExpeditionsRecord(IEnumerable<Pile> expeditions, int i)
+        private static void DisplayExpeditionsRecord(IEnumerable<IPile> expeditions, int i)
         {
             if (i > 1)
                 Write(new string(' ', 16));
@@ -175,14 +176,27 @@ namespace LostCities.CardGame.Console.UI
             foreach (var expedition in expeditions)
             {
                 if (i > expedition.Cards.Count)
-                    DisplayCard(new Card("", new ExpeditionType("Blue"), 0));
+                    DisplayCardId(new Card("", new ExpeditionType("Blue"), 0));
                 else
-                    DisplayCard(expedition.Cards.ElementAt(i - 1));
+                    DisplayCardId(expedition.Cards.ElementAt(i - 1));
             }
             SysConsole.WriteLine();
         }
 
-        private static void DisplayCard(Card card)
+        public static void DisplayExistingDiscardPileNames(List<IPile> discardPiles)
+        {
+            Write(ConsoleColor.White, "Discard piles:  ");
+
+            foreach (var pile in discardPiles)
+            {
+                Card card = pile.Cards.First();
+
+                Write(card.ExpeditionType.Color, card.ExpeditionType.Name + " ");
+            }
+            SysConsole.WriteLine();
+        }
+
+        private static void DisplayCardId(Card card)
         {            
             Write(card.ExpeditionType.Color, card.Id.PadRight(4, ' '));
         }

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using LostCities.CardGame.WebApi.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace LostCities.CardGame.WebApi.Models
 {
-    public class Pile
+    public class Pile : IPile
     {
-        public List<Card> Cards { get; set;  }
+        public List<Card> Cards { get; set; }
 
         public Pile() 
         {
@@ -18,7 +19,7 @@ namespace LostCities.CardGame.WebApi.Models
             Cards.AddRange(initialCards);
         }
 
-        public void MoveCardToPile(Card card, List<Pile> piles)
+        public void MoveCardToPile(Card card, List<IPile> piles)
         {
             if (Cards.Count() == 0)
                 throw new Exception("The pile is empty.");
@@ -27,25 +28,38 @@ namespace LostCities.CardGame.WebApi.Models
             GetPileByExpedition(card, piles).Cards.Add(card);
         }
 
-        private Pile GetPileByExpedition(Card card, List<Pile> piles)
+        public void DrawDiscardCard(Game game, IPile handCards)
         {
-            foreach (Pile cc in piles)
-                if (cc.Cards.Where(c => c.ExpeditionType.Code == card.ExpeditionType.Code).Any())
-                    return cc;
+            MoveLastCardToHand(handCards);
 
-            Pile pile = new Pile();
-            piles.Add(pile);
-            return pile;
+            if (!this.Cards.Any())
+                game.DiscardPiles.Remove(this);
         }
 
-        public void MoveLastCardTo(List<Card> targetCards)
+        public void DrawCard(IPile handCards)
+        {
+            MoveLastCardToHand(handCards);
+        }
+
+        private void MoveLastCardToHand(IPile handCards)
         {
             if (Cards.Count() == 0)
                 throw new Exception("The pile is empty.");
 
             Card card = Cards.Last();
             Cards.Remove(card);
-            targetCards.Add(card);
+            handCards.Cards.Add(card);
+        }
+
+        private IPile GetPileByExpedition(Card card, List<IPile> piles)
+        {
+            foreach (Pile p in piles)
+                if (p.Cards.Where(c => c.ExpeditionType.Code == card.ExpeditionType.Code).Any())
+                    return p;
+
+            IPile pile = new Pile();
+            piles.Add(pile);
+            return pile;
         }
     }
 }
