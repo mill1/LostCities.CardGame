@@ -177,7 +177,7 @@ namespace LostCities.CardGame.Console.UI
         private static void DisplayExpeditionsRecord(IEnumerable<IPile> expeditions, int i)
         {
             if (i > 1)
-                Write(new string(' ', 16));
+                Write(new string(' ', 20));
 
             foreach (var expedition in expeditions)
             {

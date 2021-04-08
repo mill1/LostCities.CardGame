@@ -52,23 +52,41 @@ namespace LostCities.CardGame.WebApi.Controllers
                 var game = mapper.MapToModel(gameDto);
 
                 // TODO dummy move
-                Thread.Sleep(2500);                
+                Thread.Sleep(1000);                
 
                 Random r = new Random();
-                int rInt = r.Next(0, 7);
-                Models.Card card = game.BotCards.Cards.ElementAt(rInt);
+                int i = r.Next(0, 7);
+                Models.Card randomCard = game.BotCards.Cards.ElementAt(i);
 
-                if (card.Value % 2 == 0)
+                Models.Card card = GetLowestCardOfBotHand(game, randomCard.ExpeditionType);
+                Models.Card highestExpeditionCard = GetHighestCardOfExpedition(game, randomCard.ExpeditionType);
+
+                if(highestExpeditionCard == null)
                 {
-                    card = GetLowestValueOfExpeditionType(game, card.ExpeditionType);
-                    game.BotCards.MoveCardToPile(card, game.BotExpeditions);
-                    game.DescriptionLastTurn = $"Bot moved card {card.Id} to expedition {card.ExpeditionType.Name}";
+                    if (game.BotExpeditions.Count >= 4)
+                    {
+                        game.BotCards.MoveCardToPile(card, game.DiscardPiles);
+                        game.DescriptionLastTurn = $"Bot moved card {card.Id} to discard pile {card.ExpeditionType.Name}";
+                    }
+                    else
+                    {
+                        game.BotCards.MoveCardToPile(card, game.BotExpeditions);
+                        game.DescriptionLastTurn = $"Bot moved card {card.Id} to expedition {card.ExpeditionType.Name}";
+                    }
                 }
                 else
                 {
-                    game.BotCards.MoveCardToPile(card, game.DiscardPiles);
-                    game.DescriptionLastTurn = $"Bot moved card {card.Id} to discard pile {card.ExpeditionType.Name}";
-                }                    
+                    if (card.Value < highestExpeditionCard.Value)
+                    {
+                        game.BotCards.MoveCardToPile(card, game.DiscardPiles);
+                        game.DescriptionLastTurn = $"Bot moved card {card.Id} to discard pile {card.ExpeditionType.Name}";
+                    }
+                    else
+                    {
+                        game.BotCards.MoveCardToPile(card, game.BotExpeditions);
+                        game.DescriptionLastTurn = $"Bot moved card {card.Id} to expedition {card.ExpeditionType.Name}";
+                    }
+                }
 
                 // Never take from a discard pile :)
                 game.DrawPile.DrawCard(game.BotCards);
@@ -84,9 +102,19 @@ namespace LostCities.CardGame.WebApi.Controllers
             }
         }
 
-        private Models.Card GetLowestValueOfExpeditionType(Models.Game game, Models.ExpeditionType expeditionType)
+        private Models.Card GetLowestCardOfBotHand(Models.Game game, Models.ExpeditionType expeditionType)
         {
             return game.BotCards.Cards.Where(c => c.ExpeditionType.Code == expeditionType.Code).OrderBy(x => x.Value).First();
+        }
+
+        private Models.Card GetHighestCardOfExpedition(Models.Game game, Models.ExpeditionType expeditionType)
+        {
+            var expedition = game.BotExpeditions.Where(e => e.Cards.First().ExpeditionType.Code == expeditionType.Code).FirstOrDefault();
+
+            if (expedition == null)
+                return null;
+
+            return expedition.Cards.Where(c => c.ExpeditionType.Code == expeditionType.Code).OrderByDescending(x => x.Value).First();
         }
     }
 }
