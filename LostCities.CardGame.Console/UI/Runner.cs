@@ -67,7 +67,7 @@ namespace LostCities.CardGame.Console.UI
                     duel.Play();
                     break;
                 case Wiki:
-                    string rawArticleText = http.GetWikipediaRawArticleText("Lost_Cities");
+                    string rawArticleText = http.GetWikipediaRawArticleText("Lost Cities");
                     Console.Write(ConsoleColor.Green, rawArticleText, beautify: true);
                     break;
                 case ApiProps:
