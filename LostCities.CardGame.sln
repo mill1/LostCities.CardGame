@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostCities.CardGame.Console
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostCities.CardGame.WebApi", "LostCities.CardGame.WebApi\LostCities.CardGame.WebApi.csproj", "{8E70B566-F0B2-4BBB-9D4D-3F4B8C37966C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LostCities.CardGame.Test", "LostCities.CardGame.Test\LostCities.CardGame.Test.csproj", "{B0A94C65-83A0-4FDD-A24D-9EB1368FE7A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8E70B566-F0B2-4BBB-9D4D-3F4B8C37966C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E70B566-F0B2-4BBB-9D4D-3F4B8C37966C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E70B566-F0B2-4BBB-9D4D-3F4B8C37966C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0A94C65-83A0-4FDD-A24D-9EB1368FE7A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0A94C65-83A0-4FDD-A24D-9EB1368FE7A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0A94C65-83A0-4FDD-A24D-9EB1368FE7A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0A94C65-83A0-4FDD-A24D-9EB1368FE7A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
