@@ -23,7 +23,7 @@ namespace LostCities.CardGame.WebApi.Services
 
             assemblyName.GetType().GetProperties().ToList().ForEach(p =>
             {
-                properties += $"{p.Name}: {GetAssemblyPropertyValue(assemblyName, p.Name)}\r\n";
+                properties += $"{p.Name}: {GetAssemblyPropertyValue(assemblyName, p.Name)}\n";
             });
 
             return properties;
@@ -42,8 +42,9 @@ namespace LostCities.CardGame.WebApi.Services
         {
             try
             {
-                if (property.Contains("CodeBase"))
-                    return "not available";
+                // property
+                if (property.Equals("KeyPair") || property.Contains("CodeBase"))
+                    return "[hidden]";
                 else
                     return assemblyName.GetType().GetProperty(property).GetValue(assemblyName, null).ToString();
             }
