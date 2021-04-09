@@ -31,10 +31,13 @@ namespace LostCities.CardGame.WebApi.Models
             PlayerExpeditions = new List<IPile>();
             BotExpeditions = new List<IPile>();
             DiscardPiles = new List<IPile>();
+
+            DescriptionLastTurn = "Game initialization completed succesfully.";
         }
 
-        public Game(IPile playerCards, IPile botCards, IPile drawPile,
-                    List<IPile> playerExpeditions, List<IPile> botExpeditions, List<IPile> discardPiles)            
+        public Game(IPile playerCards, IPile botCards, IPile drawPile, 
+                    List<IPile> playerExpeditions, List<IPile> botExpeditions, 
+                    List<IPile> discardPiles)            
         {
             PlayerCards = playerCards;
             BotCards = botCards;

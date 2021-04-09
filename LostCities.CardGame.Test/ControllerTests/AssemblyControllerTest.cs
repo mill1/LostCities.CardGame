@@ -45,8 +45,6 @@ namespace LostCities.CardGame.Test.ControllerTests
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
-
-
         public void Dispose()
         {
         }
