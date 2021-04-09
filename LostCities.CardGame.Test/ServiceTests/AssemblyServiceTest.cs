@@ -17,11 +17,17 @@ namespace LostCities.CardGame.Test.ServiceTests
         }
 
         [Fact]
-        public void GetPropertyValueTestOk()
+        public void GetPropertyValueNameTest()
         {
             string expected = "LostCities.CardGame.WebApi";
 
             Assert.Equal(expected, assemblyService.GetPropertyValue("Name"));
+        }
+
+        [Fact]
+        public void GetPropertyValueVersionTest()
+        {
+            Assert.NotNull(assemblyService.GetPropertyValue("Version"));
         }
 
         [Fact]
@@ -30,6 +36,12 @@ namespace LostCities.CardGame.Test.ServiceTests
             string expected = "not available";
 
             Assert.Equal(expected, assemblyService.GetPropertyValue("UNKNOWN PROPERTY"));
+        }
+
+        [Fact]
+        public void GetPropertiesTest()
+        {
+            Assert.NotNull(assemblyService.GetProperties());
         }
 
         public void Dispose()
