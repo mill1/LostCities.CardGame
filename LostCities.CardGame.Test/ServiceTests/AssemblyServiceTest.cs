@@ -1,7 +1,6 @@
 ﻿using LostCities.CardGame.WebApi.Interfaces;
 using LostCities.CardGame.WebApi.Services;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace LostCities.CardGame.Test.ServiceTests

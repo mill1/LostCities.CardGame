@@ -10,15 +10,6 @@ namespace LostCities.CardGame.WebApi.Services
     public class WikipediaReaderService : IWikipediaReaderService
     {
         private const string UrlWikipediaRawBase = "https://en.wikipedia.org/w/index.php?action=raw&title=";
-        private const int NoInfobox = -1;
-
-        private readonly ILogger logger;
-
-        public WikipediaReaderService(ILogger<WikipediaReaderService> logger)
-        {
-            this.logger = logger;
-        }
-
 
         private string GetRawArticleMarkup(ref string article, out bool isRedirect)
         {
@@ -45,22 +36,6 @@ namespace LostCities.CardGame.WebApi.Services
             return rawText;
         }
 
-        private int GetStartPositionInfobox(string rawText)
-        {
-            int pos = rawText.IndexOf("infobox", StringComparison.OrdinalIgnoreCase);
-
-            if (pos == -1)
-                return NoInfobox;
-
-            if (rawText.Contains("Please do not add an infobox", StringComparison.OrdinalIgnoreCase))
-                return NoInfobox;
-
-            // Find the opening accolades of the listbox
-            pos = rawText.LastIndexOf("{{", pos);
-
-            return pos;
-        }
-
         private string GetRawWikiPageText(string wikiPage)
         {
             string uri = UrlWikipediaRawBase + wikiPage.Replace(" ", "_");
@@ -71,7 +46,6 @@ namespace LostCities.CardGame.WebApi.Services
 
         private string GetRedirectPage(string rawText)
         {
-            // #REDIRECT[[Robert McG. Thomas Jr.]]
             int pos = rawText.IndexOf("[[");
             string redirectPage = rawText.Substring(pos + 2);
             pos = redirectPage.IndexOf("]]");
