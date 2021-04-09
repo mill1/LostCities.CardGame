@@ -3,7 +3,6 @@ using Moq;
 
 namespace LostCities.CardGame.Test.Mocks
 {
-
     public static class MockLogger<T>
     {
         public static ILogger<T> CreateMockLogger()

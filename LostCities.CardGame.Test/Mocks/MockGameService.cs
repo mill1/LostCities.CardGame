@@ -9,6 +9,8 @@ namespace LostCities.CardGame.Test.Mocks
     public class MockGameService
     {
         public Game NewGame;
+        public Game EmptyGame;
+        public Game NewGameThrowsException; 
         private Dictionary<string, ExpeditionType> expeditions;
 
         public MockGameService()
@@ -31,6 +33,21 @@ namespace LostCities.CardGame.Test.Mocks
                 new List<IPile>());
 
             NewGame.DescriptionLastTurn = "Game initialization completed succesfully.";
+
+            EmptyGame = new Game(
+                new Pile(),
+                new Pile(),
+                new Pile(),
+                new List<IPile>(),
+                new List<IPile>(),
+                new List<IPile>());
+
+            List<Card> deck = new List<Card>();
+            deck.AddRange(GetPlayerCards().Cards);
+            deck.AddRange(GetBotCards().Cards);
+            deck.AddRange(GetDrawPile().Cards);
+
+            NewGameThrowsException = new Game(deck);
         }
 
         public IGameService GetMockGameService()
