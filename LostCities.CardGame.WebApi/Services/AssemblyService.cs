@@ -42,7 +42,6 @@ namespace LostCities.CardGame.WebApi.Services
         {
             try
             {
-                // property
                 if (property.Equals("KeyPair") || property.Contains("CodeBase"))
                     return "[hidden]";
                 else
