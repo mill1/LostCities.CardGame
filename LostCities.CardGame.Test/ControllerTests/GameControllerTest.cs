@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using Xunit;
+using LostCities.CardGame.WebApi.Services;
+using System.Collections.Generic;
 
 namespace LostCities.CardGame.Test.ControllerTests
 {
@@ -14,15 +16,17 @@ namespace LostCities.CardGame.Test.ControllerTests
     public class GameControllerTest: IDisposable
     {
         private readonly GameController gameController;
-        private readonly IGameService mockGameService;
+        private readonly IGameService gameService;
         private readonly IMapper mapper;
+        private readonly MockFactory mockFactory;
 
         public GameControllerTest()
         {
             mapper = new Mapper();
-            mockGameService = new MockGameService().GetMockGameService();
-            ILogger<GameController> mockLogger = MockLogger<GameController>.CreateMockLogger();
-            gameController = new GameController(mapper, mockGameService, mockLogger);
+            mockFactory = new MockFactory();
+            // mockGameService = MockGameService().GetMockGameService(); Not needed yet
+            gameService = new GameService(MockLogger<GameService>.CreateMockLogger()); 
+            gameController = new GameController(mapper, gameService, MockLogger<GameController>.CreateMockLogger());
         }
 
         [Fact]
@@ -57,6 +61,34 @@ namespace LostCities.CardGame.Test.ControllerTests
             Game gameDto = mapper.MapToDto(new MockFactory().GetEmptyGame());
 
             IActionResult result = gameController.PlayTurn(gameDto);
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public void CalculateScoreOkTest()
+        {
+            IEnumerable<IPile> expeditions = new List<IPile>()
+            {
+                 new WebApi.Models.Pile(
+                        new List<WebApi.Models.Card>()
+                        {
+                            mockFactory.CreateCard("BA"),
+                            mockFactory.CreateCard("B4"),
+                            mockFactory.CreateCard("B8"),
+                            mockFactory.CreateCard("B10"),
+                        })
+            };
+
+            IActionResult result = gameController.CalculateScore(mapper.MapToDto(expeditions));            
+
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public void CalculateScoreNullParameterTest()
+        {
+            IActionResult result = gameController.CalculateScore(null);
 
             Assert.IsType<BadRequestObjectResult>(result);
         }

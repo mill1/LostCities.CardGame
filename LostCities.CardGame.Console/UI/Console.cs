@@ -83,10 +83,10 @@ namespace LostCities.CardGame.Console.UI
             SysConsole.ResetColor();
         }
 
-        public static void DisplayGame(Game game)
+        public static void DisplayGame(Game game, bool revealBotCards=false)
         {
             DisplayDrawPile(game.DrawPile);
-            DisplayBotCards(game);            
+            DisplayBotCards(game, revealBotCards);            
             DisplayDiscardPiles(game.DiscardPiles);            
             DisplayPlayerCards(game);
         }
@@ -118,14 +118,20 @@ namespace LostCities.CardGame.Console.UI
             SysConsole.WriteLine("\r\n");
         }
 
-        private static void DisplayBotCards(Game game)
+        private static void DisplayBotCards(Game game, bool revealBotCards)
         {
             WriteLine(ConsoleColor.Cyan, "BOT: (that's your opponent)");
 
             Write(ConsoleColor.Cyan, "Cards:              ");
 
             foreach (Card card in game.BotCards.Cards)
-                Write(ConsoleColor.Gray, "XX  ");
+            {
+                if(revealBotCards)
+                    DisplayCardId(card);
+                else
+                    Write(ConsoleColor.Gray, "XX  ");
+            }
+                
 
             SysConsole.WriteLine();
 
@@ -200,6 +206,16 @@ namespace LostCities.CardGame.Console.UI
                 Write(card.ExpeditionType.Color, $"{card.ExpeditionType.Name} ({card.ExpeditionType.Code.ToLower()})  ");
             }
             SysConsole.WriteLine();
+        }
+
+        public static void DisplayResultGame(int scorePlayer, int scoreBot, string result)
+        {
+            WriteLine(ConsoleColor.Magenta, new String('#', NumberOfChars));
+            WriteLine(ConsoleColor.Magenta, $"Score player: {scorePlayer}");
+            WriteLine(ConsoleColor.Magenta, $"Score bot:    {scoreBot}");
+            WriteLine(ConsoleColor.Magenta, result);
+            WriteLine(ConsoleColor.Magenta, new String('#', NumberOfChars));
+
         }
 
         public static void DisplayCardIds(IEnumerable<Card> cards)

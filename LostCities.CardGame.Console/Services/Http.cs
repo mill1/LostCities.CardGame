@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -33,15 +34,26 @@ namespace LostCities.CardGame.Console.Services
 
         public WebApi.Dtos.Game PostBotTurn(WebApi.Dtos.Game gameDto)
         {
-            var ser = JsonConvert.SerializeObject(gameDto);
+            var content = JsonConvert.SerializeObject(gameDto);
 
-            HttpResponseMessage response = client.PostAsync("game/playturn", new StringContent(ser, Encoding.UTF8, "application/json")).Result;
+            HttpResponseMessage response = client.PostAsync("game/playturn", new StringContent(content, Encoding.UTF8, "application/json")).Result;
 
             string result = HandleResponse(response);
 
             WebApi.Dtos.Game reponse = JsonConvert.DeserializeObject<WebApi.Dtos.Game>(result);
 
             return reponse;
+        }
+
+        public int PostCalculateScore(IEnumerable<IEnumerable<WebApi.Dtos.Card>> expeditionsDto)
+        {
+            var content = JsonConvert.SerializeObject(expeditionsDto);
+
+            HttpResponseMessage response = client.PostAsync("game/calculatescore", new StringContent(content, Encoding.UTF8, "application/json")).Result;
+
+            string score = HandleResponse(response);
+
+            return int.Parse(score);
         }
 
         public string GetWikipediaRawArticleText(string articleTitle)

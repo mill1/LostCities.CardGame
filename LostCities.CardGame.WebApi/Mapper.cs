@@ -8,6 +8,21 @@ namespace LostCities.CardGame.WebApi
 {
     public class Mapper : IMapper
     {
+        public Models.Game MapToModel(Dtos.Game gameDto)
+        {
+            Models.Game game = new Models.Game(
+                new Models.Pile(MapToModel(gameDto.PlayerCards)),
+                new Models.Pile(MapToModel(gameDto.BotCards)),
+                new Models.Pile(MapToModel(gameDto.DrawPile)),
+                MapToModel(gameDto.PlayerExpeditions),
+                MapToModel(gameDto.BotExpeditions),
+                MapToModel(gameDto.DiscardPiles));
+
+            game.DescriptionLastTurn = gameDto.DescriptionLastTurn;
+
+            return game;
+        }
+
         public Dtos.Game MapToDto(Models.Game game)
         {
             Dtos.Game gameCardsDto = new Dtos.Game
@@ -23,7 +38,17 @@ namespace LostCities.CardGame.WebApi
             return gameCardsDto;
         }
 
-        private IEnumerable<IEnumerable<Dtos.Card>> MapToDto(IEnumerable<IPile> piles)
+        public List<IPile> MapToModel(IEnumerable<IEnumerable<Dtos.Card>> cardsListDto)
+        {
+            List<IPile> piles = new List<IPile>();
+
+            foreach (IEnumerable<Dtos.Card> cardsDto in cardsListDto)
+                piles.Add(new Models.Pile(MapToModel(cardsDto)));
+
+            return piles;
+        }
+
+        public IEnumerable<IEnumerable<Dtos.Card>> MapToDto(IEnumerable<IPile> piles)
         {
             List<IEnumerable<Dtos.Card>> cardsListDto = new List<IEnumerable<Dtos.Card>>();
 
@@ -52,32 +77,6 @@ namespace LostCities.CardGame.WebApi
                 Value = card.Value
             };
         }
-
-        public Models.Game MapToModel(Dtos.Game gameDto)
-        {
-            Models.Game game = new Models.Game(
-                new Models.Pile(MapToModel(gameDto.PlayerCards)),
-                new Models.Pile(MapToModel(gameDto.BotCards)),
-                new Models.Pile(MapToModel(gameDto.DrawPile)),
-                MapToModel(gameDto.PlayerExpeditions),
-                MapToModel(gameDto.BotExpeditions),
-                MapToModel(gameDto.DiscardPiles));
-
-            game.DescriptionLastTurn = gameDto.DescriptionLastTurn;
-
-            return game;
-        }
-
-        private List<IPile> MapToModel(IEnumerable<IEnumerable<Dtos.Card>> pilesDto)
-        {
-            List<IPile> piles = new List<IPile>();
-
-            foreach (IEnumerable<Dtos.Card> cardsDto in pilesDto)
-                piles.Add(new Models.Pile(MapToModel(cardsDto)));
-
-            return piles;
-        }
-
 
         private IEnumerable<Models.Card> MapToModel(IEnumerable<Dtos.Card> cardsDto)
         {
