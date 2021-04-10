@@ -36,7 +36,7 @@ namespace LostCities.CardGame.Test.ControllerTests
         [Fact]
         public void PlayTurnOkTest()
         {
-            Game gameDto = mapper.MapToDto(new MockGameService().NewGame);
+            Game gameDto = mapper.MapToDto(new MockFactory().GetNewGame());
 
             IActionResult result = gameController.PlayTurn(gameDto);
 
@@ -44,7 +44,7 @@ namespace LostCities.CardGame.Test.ControllerTests
         }
 
         [Fact]
-        public void PlayTurnBadRequestNullTest()
+        public void PlayTurnBadRequestNullParameterTest()
         {
             IActionResult result = gameController.PlayTurn(null);
 
@@ -54,7 +54,7 @@ namespace LostCities.CardGame.Test.ControllerTests
         [Fact]
         public void PlayTurnBadRequestTest()
         {
-            Game gameDto = mapper.MapToDto(new MockGameService().EmptyGame);
+            Game gameDto = mapper.MapToDto(new MockFactory().GetEmptyGame());
 
             IActionResult result = gameController.PlayTurn(gameDto);
 

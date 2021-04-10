@@ -17,19 +17,14 @@ namespace LostCities.CardGame.Test.Mocks
             if (property.Contains("CodeBase"))
                 return "[hidden]";
 
-            switch (property)
+            return property switch
             {
-                case "Name":
-                    return "LostCities.CardGame.WebApi";
-                case "Version":
-                    return "0.0.0.0";
-                case "KeyPair":
-                    return "[hidden]";
-                case "ThrowException":
-                    throw new Exception("Mock Exception");
-                default:
-                    return "not available";                    
-            }
+                "Name" => "LostCities.CardGame.WebApi",
+                "Version" => "0.0.0.0",
+                "KeyPair" => "[hidden]",
+                "ThrowException" => throw new Exception("Mock Exception"),
+                _ => "not available",
+            };
         }
     }
 }
