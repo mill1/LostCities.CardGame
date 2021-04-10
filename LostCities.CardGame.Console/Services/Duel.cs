@@ -173,7 +173,7 @@ namespace LostCities.CardGame.Console.Services
             // Is the selected card lower than the max value of the corresponding expedition (if any)?
             List<Card> flattened = expeditions.SelectMany(pile => pile.Cards).ToList();
 
-            var highestCard = flattened.Where(c => c.ExpeditionType == card.ExpeditionType).OrderByDescending(c => c.Value).FirstOrDefault();
+            var highestCard = flattened.Where(c => c.ExpeditionType.Equals(card.ExpeditionType)).OrderByDescending(c => c.Value).FirstOrDefault();
 
             if (highestCard != null)
                 if (card.Value < highestCard.Value)

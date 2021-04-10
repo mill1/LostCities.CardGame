@@ -120,8 +120,9 @@ namespace LostCities.CardGame.Console.UI
 
         private static void DisplayBotCards(Game game, bool revealBotCards)
         {
-            WriteLine(ConsoleColor.Cyan, "BOT: (that's your opponent)");
+            game.BotCards.Cards = game.BotCards.Cards.OrderBy(c => c.ExpeditionType.Name).ThenBy(c => c.Value).ToList();
 
+            WriteLine(ConsoleColor.Cyan, "BOT: (that's your opponent)");
             Write(ConsoleColor.Cyan, "Cards:              ");
 
             foreach (Card card in game.BotCards.Cards)
@@ -131,7 +132,6 @@ namespace LostCities.CardGame.Console.UI
                 else
                     Write(ConsoleColor.Gray, "XX  ");
             }
-                
 
             SysConsole.WriteLine();
 
