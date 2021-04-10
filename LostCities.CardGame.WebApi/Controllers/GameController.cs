@@ -102,6 +102,25 @@ namespace LostCities.CardGame.WebApi.Controllers
             }
         }
 
+        [HttpPost ("calculatescore")]
+        public IActionResult CalculateScore(IEnumerable<IEnumerable<Dtos.Card>> expeditionsDto)
+        {
+            try
+            {
+                if (expeditionsDto == null)
+                    return BadRequest("game object to cannot be null.");
+
+                var expeditions = mapper.MapToModel(expeditionsDto);
+                return Ok(gameService.CalculateScore(expeditions));
+            }
+            catch (Exception e)
+            {
+                string message = $"Calculating the score failed.\r\nException:\r\n{e}";
+                logger.LogError($"{message}", e);
+                return BadRequest(message);
+            }
+        }     
+
         private Models.Card GetLowestCardOfBotHand(Models.Game game, Models.ExpeditionType expeditionType)
         {
             return game.BotCards.Cards.Where(c => c.ExpeditionType.Code == expeditionType.Code).OrderBy(x => x.Value).First();

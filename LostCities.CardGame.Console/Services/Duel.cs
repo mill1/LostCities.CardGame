@@ -20,14 +20,10 @@ namespace LostCities.CardGame.Console.Services
 
         public void Play()
         {
-            bool playersTurn = PlayersTurn();
+            bool playersTurn = DoesPlayersStart();
+            Game game = InitializeGame();
 
-            UI.Console.WriteLine(ConsoleColor.DarkCyan, "Shuffling and dealing the deck...");
-            WebApi.Dtos.Game gameDto = http.GetNewGame();
-
-            Game game = mapper.MapToModel(gameDto);
-
-            while (game.DrawPile.Cards.Count() > 0)
+            while (game.DrawPile.Cards.Count() > 35) // TODO -> 0 haha
             {
                 UI.Console.DisplayGame(game);
 
@@ -37,10 +33,28 @@ namespace LostCities.CardGame.Console.Services
                     game = ProcessTurnBot(game);
 
                 playersTurn = !playersTurn;
-             }             
+            }
+            HandleGameEnd(game);
+        }
 
-             // TODO: eindstand uitrekenen
-             //TODO : winnaar bepalen en kaarten bot tonen
+        private Game InitializeGame()
+        {
+            UI.Console.WriteLine(ConsoleColor.DarkCyan, "Shuffling and dealing the deck...");
+            WebApi.Dtos.Game gameDto = http.GetNewGame();
+
+            Game game = mapper.MapToModel(gameDto);
+            return game;
+        }
+
+        private void HandleGameEnd(Game game)
+        {
+            int scorePlayer = http.PostCalculateScore(mapper.MapToDto(game.PlayerExpeditions));
+            int scoreBot = http.PostCalculateScore(mapper.MapToDto(game.BotExpeditions));
+
+            string result = scorePlayer == scoreBot ? "It's a draw!" : $"{(scorePlayer > scoreBot ? "Player" : "Bot")} won!";
+
+            UI.Console.DisplayResultGame(scorePlayer, scoreBot, result);
+            UI.Console.DisplayGame(game, revealBotCards: true);
         }
 
         private Game ProcessTurnBot(Game game)
@@ -57,7 +71,7 @@ namespace LostCities.CardGame.Console.Services
 
         private void ProcessTurnPlayer(Game game)
         {
-            string answer = "s";
+            string answer = "s"; // TODO string literals
 
             while (answer != "e" && answer != "d")
             {
@@ -271,7 +285,7 @@ namespace LostCities.CardGame.Console.Services
             return UI.Console.ReadLine();
         }
 
-        private bool PlayersTurn()
+        private bool DoesPlayersStart()
         {
             UI.Console.WriteLine(ConsoleColor.White, "Do you want to start? (y/n)");
             string answer = UI.Console.ReadLine();
