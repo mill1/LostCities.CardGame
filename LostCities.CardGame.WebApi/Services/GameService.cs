@@ -58,5 +58,32 @@ namespace LostCities.CardGame.WebApi.Services
                     new ExpeditionType("Green")
                 };
         }
+
+        public int CalculateScore(IEnumerable<IPile> expeditions)
+        {
+            int score = 0;
+
+            foreach (var expedition in expeditions)
+                score += CalculateScore(expedition);
+
+            return score;
+        }
+
+        private int CalculateScore(IPile expedition)
+        {
+            int score = 0;
+
+            foreach (var card in expedition.Cards)
+                score += card.Value;
+
+            score -= Constants.ExpeditionCosts;
+
+            int wagerCardsCount = expedition.Cards.Where(c => c.Value == 0).Count();
+
+            score *= wagerCardsCount + 1;
+            score += expedition.Cards.Count < Constants.MinimumExpeditionLengthForBonus ? 0 : Constants.ExpeditionBonus;
+
+            return score;
+        }
     }
 }

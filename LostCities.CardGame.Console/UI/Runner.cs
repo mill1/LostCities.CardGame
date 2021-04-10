@@ -9,6 +9,7 @@ namespace LostCities.CardGame.Console.UI
     {
         private const string NewDuel = "n";
         private const string Wiki = "w";
+        private const string ApiProps = "a";
         private const string Quit = "q";
         private bool quit;
 
@@ -53,6 +54,7 @@ namespace LostCities.CardGame.Console.UI
             {
                 $"{NewDuel}:\tNew duel",
                 $"{Wiki}:\tShow wiki",
+                $"{ApiProps}:\tShow API properties",
                 $"{Quit}:\tQuit application"
             };
         }
@@ -65,8 +67,12 @@ namespace LostCities.CardGame.Console.UI
                     duel.Play();
                     break;
                 case Wiki:
-                    string rawArticleText = http.GetWikipediaRawArticleText("Lost_Cities");
+                    string rawArticleText = http.GetWikipediaRawArticleText("Lost Cities");
                     Console.Write(ConsoleColor.Green, rawArticleText, beautify: true);
+                    break;
+                case ApiProps:
+                    string assemblyProperties = http.GetWebApiAssemblyProperties();
+                    Console.Write(ConsoleColor.Green, assemblyProperties, beautify: true);
                     break;
                 case Quit:
                     quit = true;

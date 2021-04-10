@@ -1,22 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using LostCities.CardGame.WebApi.Interfaces;
 using System;
-using System.Linq;
-using System.Reflection;
 
-namespace VersionReferences.Controllers
+namespace LostCities.CardGame.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class AssemblyController : ControllerBase
     {
-        private readonly ILogger<AssemblyController> logger;
-        public readonly Assembly ExecutingAssembly;
+        private readonly IAssemblyService assemblyService;
+        private readonly ILogger<AssemblyController> logger;        
 
-        public AssemblyController(ILogger<AssemblyController> logger)
+        public AssemblyController(IAssemblyService assemblyService, ILogger<AssemblyController> logger)
         {
-            this.logger = logger;
-            ExecutingAssembly = Assembly.GetExecutingAssembly();
+            this.assemblyService = assemblyService;
+            this.logger = logger;            
         }
 
         [HttpGet("properties")]
@@ -24,18 +23,7 @@ namespace VersionReferences.Controllers
         {
             try
             {
-                var assemblyName = ExecutingAssembly.GetName();
-
-                var properties = assemblyName.GetType().GetProperties();
-
-                string response = string.Empty;
-
-                properties.ToList().ForEach(p =>
-                {
-                    response += $"{p.Name}: {GetAssemblyPropertyValue(assemblyName, p.Name)}\r\n";
-                });
-
-                return Ok(response);
+                return Ok(assemblyService.GetProperties());
             }
             catch (Exception e)
             {
@@ -50,9 +38,7 @@ namespace VersionReferences.Controllers
         {
             try
             {
-                var assemblyName = ExecutingAssembly.GetName();
-                string assemblyPropertyValue = GetAssemblyPropertyValue(assemblyName, property);
-                return Ok(assemblyPropertyValue);
+                return Ok(assemblyService.GetPropertyValue(property));
             }
             catch (Exception e)
             {
@@ -61,21 +47,6 @@ namespace VersionReferences.Controllers
                 logger.LogError($"{message}", e);
                 return BadRequest(message);
             }
-        }
-
-        private string GetAssemblyPropertyValue(AssemblyName assemblyName, string property)
-        {
-            try
-            {
-                if (property.Contains("CodeBase"))
-                    return "not available";
-                else
-                    return assemblyName.GetType().GetProperty(property).GetValue(assemblyName, null).ToString();
-            }
-            catch (Exception)
-            {
-                return "not available";
-            }
-        }
+        }        
     }
 }

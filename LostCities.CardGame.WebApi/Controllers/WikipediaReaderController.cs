@@ -9,7 +9,6 @@ namespace LostCities.CardGame.WebApi.Controllers
     [Route("[controller]")]
     public class WikipediaReaderController : ControllerBase
     {
-
         private readonly IWikipediaReaderService wikipediaService;
         private readonly ILogger<WikipediaReaderController> logger;
 

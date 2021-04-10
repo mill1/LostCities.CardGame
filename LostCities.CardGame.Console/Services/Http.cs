@@ -59,6 +59,13 @@ namespace LostCities.CardGame.Console.Services
             return HandleResponse(response).Replace("\"", "");
         }
 
+        public string GetWebApiAssemblyProperties()
+        {
+            HttpResponseMessage response = client.GetAsync($"assembly/properties").Result;
+
+            return HandleResponse(response).Replace("\"", ""); 
+        }
+
         private string HandleResponse(HttpResponseMessage response)
         {
             string result = response.Content.ReadAsStringAsync().Result;
