@@ -25,7 +25,7 @@ namespace LostCities.CardGame.Console.Services
 
             while (game.DrawPile.Cards.Count() > 35) // TODO -> 0 haha
             {
-                UI.Console.DisplayGame(game);
+                UI.Console.DisplayGame(game, true); // TODO lw true
 
                 if (playersTurn)
                     ProcessTurnPlayer(game);

@@ -155,6 +155,16 @@ namespace LostCities.CardGame.Test.ServiceTests
             Assert.Equal(expected, gameService.CalculateScore(expeditions));
         }
 
+        [Fact]
+        public void PlayTurnDescriptionLastTurnNotNull()
+        {
+            var game = mockFactory.GetNewGame();
+
+            game = gameService.PlayTurn(game);
+
+            Assert.True(!string.IsNullOrEmpty(game.DescriptionLastTurn) && game.DescriptionLastTurn != "Game initialization completed succesfully.");
+        }
+
         public void Dispose()
         {
         }

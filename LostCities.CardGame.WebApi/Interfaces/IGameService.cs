@@ -7,5 +7,6 @@ namespace LostCities.CardGame.WebApi.Interfaces
     {
         public Game GetNewGame();
         public int CalculateScore(IEnumerable<IPile> expeditions);
+        public Game PlayTurn(Game game);
     }
 }
