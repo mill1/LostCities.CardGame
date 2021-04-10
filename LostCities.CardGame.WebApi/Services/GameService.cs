@@ -71,7 +71,19 @@ namespace LostCities.CardGame.WebApi.Services
 
         private int CalculateScore(IPile expedition)
         {
-            return 1;
+            int score = 0;
+
+            foreach (var card in expedition.Cards)
+                score += card.Value;
+
+            score -= Constants.ExpeditionCosts;
+
+            int wagerCardsCount = expedition.Cards.Where(c => c.Value == 0).Count();
+
+            score *= wagerCardsCount + 1;
+            score += expedition.Cards.Count < Constants.MinimumExpeditionLengthForBonus ? 0 : Constants.ExpeditionBonus;
+
+            return score;
         }
     }
 }
