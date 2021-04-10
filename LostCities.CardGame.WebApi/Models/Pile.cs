@@ -58,7 +58,7 @@ namespace LostCities.CardGame.WebApi.Models
         private IPile GetPileByExpedition(Card card, List<IPile> piles)
         {
             foreach (Pile p in piles)
-                if (p.Cards.Where(c => c.ExpeditionType.Code == card.ExpeditionType.Code).Any())
+                if (p.Cards.Where(c => c.ExpeditionType == card.ExpeditionType).Any())
                     return p;
 
             IPile pile = new Pile();

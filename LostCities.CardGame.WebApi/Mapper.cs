@@ -73,7 +73,7 @@ namespace LostCities.CardGame.WebApi
             return new Dtos.Card()
             {
                 Id = card.Id,
-                ExpeditionType = card.ExpeditionType.Name.ToString(),
+                ExpeditionType = card.ExpeditionType.ToString(),
                 Value = card.Value
             };
         }

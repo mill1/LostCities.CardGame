@@ -88,12 +88,52 @@ namespace LostCities.CardGame.WebApi.Services
 
         public Game PlayTurn(Game game)
         {
+            // First sort the cards
+            game.BotCards.Cards = game.BotCards.Cards.OrderBy(c => c.ExpeditionType.Name).ThenBy(c => c.Value).ToList();
+
+            var botCardsPerExpeditions = GetBotCardsPerExpedition(game.BotCards);
+
+            foreach (var botCardsPerExpedition in botCardsPerExpeditions)
+            {
+                EvaluateBotCardsPerExpedition(botCardsPerExpedition, game);
+            }
+
+            return game;
+        }
+
+        private void EvaluateBotCardsPerExpedition(IEnumerable<Card> botCardsPerExpedition, Game game)
+        {
+            // indicator: low value            
+            // indicator: number of cards
+            // indicator: small delta's
+
+            var expedition = game.BotExpeditions.Where(e => e.Cards.First().ExpeditionType == botCardsPerExpedition.First().ExpeditionType);
+            //int lastValueExpedition = 
+
+
+        }
+
+        private IEnumerable<IEnumerable<Card>> GetBotCardsPerExpedition(IPile botCards)
+        {
+            var distinctExpeditionTypes = botCards.Cards.Select(c => c.ExpeditionType).Distinct();
+
+            List<IEnumerable<Card>> botCardsPerExpeditions = new List<IEnumerable<Card>>();
+
+            foreach (var expeditionType in distinctExpeditionTypes)
+                botCardsPerExpeditions.Add(botCards.Cards.Where(c => c.ExpeditionType == expeditionType));
+
+            return botCardsPerExpeditions;
+        }
+
+
+        public Game PlayTurnDummy(Game game)
+        {
             Random r = new Random();
             int i = r.Next(0, 7);
-            Models.Card randomCard = game.BotCards.Cards.ElementAt(i);
+            Card randomCard = game.BotCards.Cards.ElementAt(i);
 
-            Models.Card card = GetLowestCardOfBotHand(game, randomCard.ExpeditionType);
-            Models.Card highestExpeditionCard = GetHighestCardOfExpedition(game, randomCard.ExpeditionType);
+            Card card = GetLowestCardOfBotHand(game, randomCard.ExpeditionType);
+            Card highestExpeditionCard = GetHighestCardOfExpedition(game, randomCard.ExpeditionType);
 
             if (highestExpeditionCard == null)
             {
@@ -129,19 +169,19 @@ namespace LostCities.CardGame.WebApi.Services
             return game;
         }
 
-        private Models.Card GetLowestCardOfBotHand(Models.Game game, Models.ExpeditionType expeditionType)
+        private Card GetLowestCardOfBotHand(Game game, ExpeditionType expeditionType)
         {
-            return game.BotCards.Cards.Where(c => c.ExpeditionType.Code == expeditionType.Code).OrderBy(x => x.Value).First();
+            return game.BotCards.Cards.Where(c => c.ExpeditionType == expeditionType).OrderBy(x => x.Value).First();
         }
 
-        private Models.Card GetHighestCardOfExpedition(Models.Game game, Models.ExpeditionType expeditionType)
+        private Card GetHighestCardOfExpedition(Game game, ExpeditionType expeditionType)
         {
-            var expedition = game.BotExpeditions.Where(e => e.Cards.First().ExpeditionType.Code == expeditionType.Code).FirstOrDefault();
+            var expedition = game.BotExpeditions.Where(e => e.Cards.First().ExpeditionType == expeditionType).FirstOrDefault();
 
             if (expedition == null)
                 return null;
 
-            return expedition.Cards.Where(c => c.ExpeditionType.Code == expeditionType.Code).OrderByDescending(x => x.Value).First();
+            return expedition.Cards.Where(c => c.ExpeditionType == expeditionType).OrderByDescending(x => x.Value).First();
         }
     }
 }

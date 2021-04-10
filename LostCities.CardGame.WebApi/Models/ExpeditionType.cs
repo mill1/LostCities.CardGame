@@ -22,5 +22,25 @@ namespace LostCities.CardGame.WebApi.Models
             else
                 throw new Exception($"Invalid color: {name}");
         }
+
+        public override bool Equals(object obj)
+        {
+            var item = obj as ExpeditionType;
+
+            if (item == null)
+                return false;
+
+            return Code.Equals(item.Code);
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }
