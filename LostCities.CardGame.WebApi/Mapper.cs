@@ -16,9 +16,10 @@ namespace LostCities.CardGame.WebApi
                 new Models.Pile(MapToModel(gameDto.DrawPile)),
                 MapToModel(gameDto.PlayerExpeditions),
                 MapToModel(gameDto.BotExpeditions),
-                MapToModel(gameDto.DiscardPiles));
-
-            game.DescriptionLastTurn = gameDto.DescriptionLastTurn;
+                MapToModel(gameDto.DiscardPiles))
+            {
+                DescriptionLastTurn = gameDto.DescriptionLastTurn
+            };
 
             return game;
         }

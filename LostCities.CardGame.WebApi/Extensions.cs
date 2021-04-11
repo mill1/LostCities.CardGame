@@ -22,5 +22,16 @@ namespace LostCities.CardGame.WebApi
                 list[n] = value;
             }
         }
+
+        public static Card Lowest(this IEnumerable<Card> cards)
+        {
+            return cards.OrderBy(c => c.Value).FirstOrDefault();
+        }
+
+        public static Card Highest(this IEnumerable<Card> cards)
+        {
+            return cards.OrderByDescending(c => c.Value).FirstOrDefault();
+        }
+
     }
 }

@@ -25,7 +25,7 @@ namespace LostCities.CardGame.Test.ControllerTests
             mapper = new Mapper();
             mockFactory = new MockFactory();
             // mockGameService = MockGameService().GetMockGameService(); Not needed yet
-            gameService = new GameService(MockLogger<GameService>.CreateMockLogger()); 
+            gameService = new GameService(); 
             gameController = new GameController(mapper, gameService, MockLogger<GameController>.CreateMockLogger());
         }
 

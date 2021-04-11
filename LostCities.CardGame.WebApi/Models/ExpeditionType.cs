@@ -25,9 +25,7 @@ namespace LostCities.CardGame.WebApi.Models
 
         public override bool Equals(object obj)
         {
-            var item = obj as ExpeditionType;
-
-            if (item == null)
+            if (!(obj is ExpeditionType item))
                 return false;
 
             return Code.Equals(item.Code);

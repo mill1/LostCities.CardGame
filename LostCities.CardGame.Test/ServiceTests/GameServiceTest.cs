@@ -18,8 +18,7 @@ namespace LostCities.CardGame.Test.ServiceTests
 
         public GameServiceTest()
         {
-            ILogger<GameService> mockLogger = MockLogger<GameService>.CreateMockLogger();
-            gameService = new GameService(mockLogger);
+            gameService = new GameService();
             mockFactory = new MockFactory();
         }
 
